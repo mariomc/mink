@@ -1,0 +1,14 @@
+{
+  "name": "mink-all",
+  "description": "Mink (all modules)",
+  "url": "https://github.com/mariomc/mink",
+  "keywords": [
+    "ender",
+    "ink",
+    "mink"
+  ],
+  "dependencies": {
+    "ender-bootstrap-base": "0.0.1"
+  },
+  "version": "0.0.1"
+}
