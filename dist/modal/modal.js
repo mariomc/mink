@@ -1,14 +1,19 @@
 (function (factory) {
-    if (typeof define === 'function' && define.amd) {
+  if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['./mink-helper', './mink-common'], factory);
-    } else {
+      } else {
         // Browser globals
         factory(mink.helper);
-    }
-}(function ($) {
+      }
+    }(function ($) {
 
-$.fn.modal = function(parameters) {
+
+  // Save old module definition
+  var old = $.fn.modal;
+
+
+  $.fn.modal = function(parameters) {
 
   // ## Group
   // Some properties remain constant across all instances of a module.
@@ -26,18 +31,18 @@ $.fn.modal = function(parameters) {
     methodInvoked   = (typeof query == 'string'),
     queryArguments  = [].slice.call(arguments, 1),
     returnedValue
-  ;
+    ;
 
   // ## Singular
   // Iterate over all elements to initialize module
   $allModules
-    .each(function() {
-      var
+  .each(function() {
+    var
 
         // Extend settings to merge run-time settings with defaults
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend({}, $.fn.modal.settings, parameters)
-          : $.extend({}, $.fn.modal.settings),
+        ? $.extend({}, $.fn.modal.settings, parameters)
+        : $.extend({}, $.fn.modal.settings),
 
         // Alias settings object for convenience and performance
         namespace      = settings.namespace,
@@ -62,7 +67,7 @@ $.fn.modal = function(parameters) {
         dataAttributes = $module.data(),
 
         module
-      ;
+        ;
 
 
       // ## Module Behavior
@@ -77,16 +82,16 @@ $.fn.modal = function(parameters) {
           module.debug('Initializing module for', element);
           module.data();
           $module
-            .on('click' + eventNamespace, settings.selector.close, module.close)
+          .on('click' + eventNamespace, settings.selector.close, module.close)
           ;
           $module
-            .on('click' + eventNamespace, module.event.click)
+          .on('click' + eventNamespace, module.event.click)
           ;
           $html
-            .on('click' + eventNamespace, settings.selector.open, module.open)
+          .on('click' + eventNamespace, settings.selector.open, module.open)
           ;
           $html
-            .on('keyup' + eventNamespace, module.event.keyup)
+          .on('keyup' + eventNamespace, module.event.keyup)
           ;
           module.instantiate();
         },
@@ -96,7 +101,7 @@ $.fn.modal = function(parameters) {
           // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
           instance = module;
           $module
-            .data(moduleNamespace, instance)
+          .data(moduleNamespace, instance)
           ;
           if(settings.autoOpen) module.open();
         },
@@ -106,8 +111,8 @@ $.fn.modal = function(parameters) {
         destroy: function() {
           module.verbose('Destroying previous module for', element);
           $module
-            .removeData(moduleNamespace)
-            .off(eventNamespace)
+          .removeData(moduleNamespace)
+          .off(eventNamespace)
           ;
           $html.off(eventNamespace, module.open);
           $html.off(eventNamespace, module.event.keyup);
@@ -192,12 +197,13 @@ $.fn.modal = function(parameters) {
          // Set module settings 
 
          data: function(){
+          module.debug('Setting settings from data attributes')
           $.each(metadata, function(index,value){
             if(dataAttributes[index] !== undefined){
               settings[index] = dataAttributes[index];
             }
           });
-         },
+        },
 
           // #### Setting
           // Module settings can be read or set using this method
@@ -271,9 +277,9 @@ $.fn.modal = function(parameters) {
           performance: {
             log: function(message) {
               var
-                currentTime,
-                executionTime,
-                previousTime
+              currentTime,
+              executionTime,
+              previousTime
               ;
               if(settings.performance) {
                 currentTime   = new Date().getTime();
@@ -292,8 +298,8 @@ $.fn.modal = function(parameters) {
             },
             display: function() {
               var
-                title = settings.name + ':',
-                totalTime = 0
+              title = settings.name + ':',
+              totalTime = 0
               ;
               time = false;
               clearTimeout(module.performance.timer);
@@ -329,9 +335,9 @@ $.fn.modal = function(parameters) {
           // If multiple values are returned an array of values matching up to the length of the selector is returned
           invoke: function(query, passedArguments, context) {
             var
-              maxDepth,
-              found,
-              response
+            maxDepth,
+            found,
+            response
             ;
             passedArguments = passedArguments || queryArguments;
             context         = element         || context;
@@ -340,8 +346,8 @@ $.fn.modal = function(parameters) {
               maxDepth = query.length - 1;
               $.each(query, function(depth, value) {
                 var camelCaseValue = (depth != maxDepth)
-                  ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1)
-                  : query
+                ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1)
+                : query
                 ;
                 if( $.isPlainObject( instance[value] ) && (depth != maxDepth) ) {
                   instance = instance[value];
@@ -362,13 +368,13 @@ $.fn.modal = function(parameters) {
                   return false;
                 }
               });
-            }
-            if ( $.isFunction( found ) ) {
-              response = found.apply(context, passedArguments);
-            }
-            else if(found !== undefined) {
-              response = found;
-            }
+}
+if ( $.isFunction( found ) ) {
+  response = found.apply(context, passedArguments);
+}
+else if(found !== undefined) {
+  response = found;
+}
             // ### Invocation response
             // If a user passes in multiple elements invoke will be called for each element and the value will be returned in an array
             // For example ``$('.things').example('has text')`` with two elements might return ``[true, false]`` and for one element ``true``
@@ -383,7 +389,7 @@ $.fn.modal = function(parameters) {
             }
             return found;
           }
-      };
+        };
 
 
 
@@ -406,14 +412,21 @@ $.fn.modal = function(parameters) {
         module.initialize();
       }
     })
-  ;
+;
 
-  return (returnedValue !== undefined)
-    ? returnedValue
-    : this
-  ;
+return (returnedValue !== undefined)
+? returnedValue
+: this
+;
 
 };
+
+// ## No conflict support
+
+$.fn.modal.noConflict = function () {
+  $.fn.modal = old;
+  return this;
+}
 
 // ## Settings
 // It is necessary to include a settings object which specifies the defaults for your module
