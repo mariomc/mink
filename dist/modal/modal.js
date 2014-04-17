@@ -45,12 +45,9 @@ $.fn.modal = function(parameters) {
         metadata       = settings.metadata,
         className      = settings.className,
 
-        // You may also find it useful to alias your own settings
-        text           = settings.text,
-
         // Define namespaces for storing module instance and binding events
         eventNamespace  = '.' + namespace,
-        moduleNamespace = 'mink-' + namespace,
+        moduleNamespace = namespace,
 
         // Instance is stored and retreived in namespaced DOM metadata
         instance        = $(this).data(moduleNamespace),
@@ -59,11 +56,10 @@ $.fn.modal = function(parameters) {
         // Cache selectors using selector settings object for access inside instance of module
         $module        = $(this),
         $html          = $('html'),
-        $text          = $module.find(settings.selector.text),
 
-        // Define private variables which can be used to maintain internal state, these cannot be changed from outside the module closure so use conservatively. Default values are set using `a || b` syntax
-        isOpen            = false,
+        // Module HTML data attributes 
 
+        dataAttributes = $module.data(),
 
         module
       ;
@@ -79,11 +75,18 @@ $.fn.modal = function(parameters) {
         // Initialize attaches events and preserves each instance in html metadata
         initialize: function() {
           module.debug('Initializing module for', element);
+          module.data();
           $module
-            .on('click' + eventNamespace, settings.selector.close, module.event.click)
+            .on('click' + eventNamespace, settings.selector.close, module.close)
+          ;
+          $module
+            .on('click' + eventNamespace, module.event.click)
           ;
           $html
             .on('click' + eventNamespace, settings.selector.open, module.open)
+          ;
+          $html
+            .on('keyup' + eventNamespace, module.event.keyup)
           ;
           module.instantiate();
         },
@@ -106,6 +109,9 @@ $.fn.modal = function(parameters) {
             .removeData(moduleNamespace)
             .off(eventNamespace)
           ;
+          $html.off(eventNamespace, module.open);
+          $html.off(eventNamespace, module.event.keyup);
+
         },
 
         // #### Refresh
@@ -119,10 +125,26 @@ $.fn.modal = function(parameters) {
         // #### By Event
         // Sometimes it makes sense to call an event handler by its type if it is dependent on the event to behave properly
         event: {
-          click: function(event) {
-            module.verbose('Preventing default action');
-            module.close();
-            event.preventDefault();
+          click: function(ev) {
+            module.verbose('Click on modal detected');
+
+            if(settings.closeOnClick){
+              if(ev.target === element) {
+                module.debug('Click on shader detected');
+                module.close();
+
+              }
+            }
+          },
+
+          keyup: function(ev){
+            module.verbose('Keyup detected');
+            if(settings.closeOnEscape){
+              if(ev.keyCode == 27){
+                module.debug('Escape press detected');
+                module.close();
+              }
+            }
           }
         },
 
@@ -130,23 +152,23 @@ $.fn.modal = function(parameters) {
         // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
         open: function() {
           module.debug('Opening the modal');
-          isOpen = true;
           $.proxy(settings.onOpen)();
-          $module.css('display', 'block');
+          $module.removeClass(className.hide);
           setTimeout(function(){
             $module.addClass(className.visible);
             $html.addClass(className.open);
-          }, 0);
+          }, 300);
 
         },
         close: function() {
           module.debug('Closing the modal');
-          isOpen = false;
           $.proxy(settings.onClose)();
           $module.removeClass(className.visible);
+
           setTimeout(function(){
-            $module.hide();
             $html.removeClass(className.open);
+            $module.addClass(className.hide);
+
           }, 300);
         },
         toggle: function(){
@@ -154,25 +176,28 @@ $.fn.modal = function(parameters) {
           isOpen ? module.close() : module.open();
         },
 
-        // ### Standard
-
-        // #### Setting
-        // Module settings can be read or set using this method
-        //
-        // Settings can either be specified by modifying the module defaults, by initializing the module with a settings object, or by changing a setting by invoking this method
-        // `$(.foo').example('setting', 'moduleName');`
-        setting: function(name, value) {
-          if( $.isPlainObject(name) ) {
-            $.extend(settings, name);
-          }
-          else if(value !== undefined) {
-            settings[name] = value;
-          }
-          else {
-            return settings[name];
+        is : {
+          open: function(){
+            module.debug('Checking if modal is open');
+            return $module.hasClass(className.hide);
+          },
+          closed: function(){
+            module.debug('Checking if modal is closed');
+            return !$module.hasClass(className.hide);
           }
         },
          // ### Standard
+
+         // #### Data attributes
+         // Set module settings 
+
+         data: function(){
+          $.each(metadata, function(index,value){
+            if(dataAttributes[index] !== undefined){
+              settings[index] = dataAttributes[index];
+            }
+          });
+         },
 
           // #### Setting
           // Module settings can be read or set using this method
@@ -398,7 +423,7 @@ $.fn.modal.settings = {
   debug       : true,
   verbose     : true,
   performance : true,
-  namespace   : 'modal',
+  namespace   : 'minkModal',
 
   onChange     : function() {},
   onOpen       : function() {},
@@ -417,7 +442,6 @@ $.fn.modal.settings = {
   },
   // Error messages returned by the module
   error: {
-    noText : 'The text you tried to display has not been defined.',
     method : 'The method you called is not defined.'
   },
   // Class names which your module refers to
@@ -427,7 +451,8 @@ $.fn.modal.settings = {
     modal: 'ink-modal',
     body: 'modal-body',
     fade: 'fade',
-    visible: 'visible'
+    visible: 'visible',
+    hide: 'hide-all'
   },
   // Metadata attributes stored or retrieved by your module. `$('.foo').data('value');`
   metadata: {
