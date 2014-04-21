@@ -144,7 +144,7 @@
             setTimeout(function () {
               $module.addClass(className.visible);
               $html.addClass(className.open);
-            }, 300);
+            }, settings.animationDuration);
 
           },
           close: function () {
@@ -157,7 +157,7 @@
               $html.removeClass(className.open);
               $module.addClass(className.hide);
 
-            }, 300);
+            }, settings.animationDuration);
           },
           toggle: function () {
             module.debug('Toggling the modal state');
@@ -405,6 +405,7 @@
     autoOpen: false,
     closeOnClick: false,
     closeOnEscape: false,
+    animationDuration: 300,
 
     // ### Optional
 

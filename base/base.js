@@ -25,6 +25,7 @@
 
 	window.mink.helper = window.mink.helper || window[currentScript.getAttribute('data-helper')] || window.Zepto || window.ender || window.jQuery || window.kink || window.$ || {};
 
+	window.mink.$ = window.mink.helper;
 
 
 	return window.mink.helper;
