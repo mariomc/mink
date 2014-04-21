@@ -1,7 +1,7 @@
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous this.
-        define(factory);
+        define(['base/base'], factory);
     } else {
         // Browser globals
         factory(window.mink.helper);
@@ -9,7 +9,8 @@
 }(function ($) {
 	// Helper methods for Ender to replicate jQuery/Zepto base API.
 
-	var class2type = [],
+	var class2type = {},
+		toString = class2type.toString,
 		type,
 		isFunction,
 		isWindow,
@@ -84,7 +85,5 @@
 	$.isPlainObject = isPlainObject;
 	$.extend = extend;
 	$.proxy = proxy;
-
-
 
 }));
