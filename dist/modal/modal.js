@@ -85,7 +85,7 @@
             module.verbose('Storing instance of module');
             // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
             instance = module;
-            module.data();
+            module.dataAttributes();
             $module.data(moduleNamespace, instance);
             if (module.setting('autoOpen')) module.open();
           },
@@ -137,8 +137,10 @@
           // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
           open: function () {
             module.debug('Opening the modal');
+            if(module.is.closed()) $.proxy(module.setting('onChange'))();
             $.proxy(module.setting('onOpen'))();
             $module.removeClass(className.hide);
+
             setTimeout(function () {
               $module.addClass(className.visible);
               $html.addClass(className.open);
@@ -147,6 +149,7 @@
           },
           close: function () {
             module.debug('Closing the modal');
+            if(module.is.open()) $.proxy(module.setting('onChange'))();
             $.proxy(module.setting('onClose'), module)();
             $module.removeClass(className.visible);
 
@@ -176,8 +179,8 @@
           // #### Data attributes
           // Set module settings 
 
-          data: function () {
-            module.debug('Setting data attributes settings')
+          dataAttributes: function () {
+            module.debug('Setting data attributes settings');
             $.each(metadata, function (index, value) {
               if (dataAttributes[index] !== undefined) {
                 settings[index] = dataAttributes[index];
