@@ -1,223 +1,201 @@
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(['./mink-helper', './mink-common'], factory);
-      } else {
-        // Browser globals
-        factory(mink.helper);
-      }
-    }(function ($) {
+    // AMD. Register as an anonymous module.
+    define(['helper/helper'], factory);
+  } else {
+    // Browser globals
+    factory(mink.helper);
+  }
+}(function ($) {
 
 
   // Save old module definition
   var old = $.fn.modal;
 
 
-  $.fn.modal = function(parameters) {
+  $.fn.modal = function (parameters) {
 
-  // ## Group
-  // Some properties remain constant across all instances of a module.
-  var
-    // Store a reference to the module group, this can be useful to refer to other modules inside each module
-    $allModules     = $(this),
-
-    // Preserve selector from outside each scope and mark current time for performance tracking
-    moduleSelector  = $allModules.selector || '',
-    time            = new Date().getTime(),
-    performance     = [],
-
-    // Preserve original arguments to determine if a method is being invoked
-    query           = arguments[0],
-    methodInvoked   = (typeof query == 'string'),
-    queryArguments  = [].slice.call(arguments, 1),
-    returnedValue
-    ;
-
-  // ## Singular
-  // Iterate over all elements to initialize module
-  $allModules
-  .each(function() {
+    // ## Group
+    // Some properties remain constant across all instances of a module.
     var
+    // Store a reference to the module group, this can be useful to refer to other modules inside each module
+    $allModules = $(this),
+
+      // Preserve selector from outside each scope and mark current time for performance tracking
+      moduleSelector = $allModules.selector || '',
+      time = new Date().getTime(),
+      performance = [],
+
+      // Preserve original arguments to determine if a method is being invoked
+      query = arguments[0],
+      methodInvoked = (typeof query == 'string'),
+      queryArguments = [].slice.call(arguments, 1),
+      returnedValue;
+    // ## Singular
+    // Iterate over all elements to initialize module
+    $allModules
+      .each(function () {
+        var
 
         // Extend settings to merge run-time settings with defaults
-        settings        = ( $.isPlainObject(parameters) )
-        ? $.extend({}, $.fn.modal.settings, parameters)
-        : $.extend({}, $.fn.modal.settings),
+        settings = ($.isPlainObject(parameters)) ? $.extend({}, $.fn.modal.settings, parameters) : $.extend({}, $.fn.modal.settings),
 
         // Alias settings object for convenience and performance
-        namespace      = settings.namespace,
-        error          = settings.error,
-        metadata       = settings.metadata,
-        className      = settings.className,
+        namespace = settings.namespace,
+        error = settings.error,
+        metadata = settings.metadata,
+        className = settings.className,
 
         // Define namespaces for storing module instance and binding events
-        eventNamespace  = '.' + namespace,
+        eventNamespace = '.' + namespace,
         moduleNamespace = namespace,
 
         // Instance is stored and retreived in namespaced DOM metadata
-        instance        = $(this).data(moduleNamespace),
-        element         = this,
+        instance = $(this).data(moduleNamespace),
+        element = this,
 
         // Cache selectors using selector settings object for access inside instance of module
-        $module        = $(this),
-        $html          = $('html'),
+        $module = $(this),
+        $html = $('html'),
 
         // Module HTML data attributes 
 
         dataAttributes = $module.data(),
 
-        module
-        ;
+        module;
 
+        // ## Module Behavior
 
-      // ## Module Behavior
+        module = {
 
-      module = {
+          // ### Required
 
-        // ### Required
+          // #### Initialize
+          // Initialize attaches events and preserves each instance in html metadata
+          initialize: function () {
+            module.debug('Initializing module for', element);
+            $module.on('click' + eventNamespace, settings.selector.close, module.close);
+            $module.on('click' + eventNamespace, module.event.click);
+            $html.on('click' + eventNamespace, settings.selector.open, module.open);
+            $html.on('keyup' + eventNamespace, module.event.keyup);
+            module.instantiate();
+          },
 
-        // #### Initialize
-        // Initialize attaches events and preserves each instance in html metadata
-        initialize: function() {
-          module.debug('Initializing module for', element);
-          module.data();
-          $module
-          .on('click' + eventNamespace, settings.selector.close, module.close)
-          ;
-          $module
-          .on('click' + eventNamespace, module.event.click)
-          ;
-          $html
-          .on('click' + eventNamespace, settings.selector.open, module.open)
-          ;
-          $html
-          .on('keyup' + eventNamespace, module.event.keyup)
-          ;
-          module.instantiate();
-        },
+          instantiate: function () {
+            module.verbose('Storing instance of module');
+            // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
+            instance = module;
+            module.data();
+            $module.data(moduleNamespace, instance);
+            if (module.setting('autoOpen')) module.open();
+          },
 
-        instantiate: function() {
-          module.verbose('Storing instance of module');
-          // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
-          instance = module;
-          $module
-          .data(moduleNamespace, instance)
-          ;
-          if(settings.autoOpen) module.open();
-        },
+          // #### Destroy
+          // Removes all events and the instance copy from metadata
+          destroy: function () {
+            module.verbose('Destroying previous module for', element);
+            $module.removeData(moduleNamespace).off(eventNamespace);
+            $html.off(eventNamespace, module.open);
+            $html.off(eventNamespace, module.event.keyup);
+          },
 
-        // #### Destroy
-        // Removes all events and the instance copy from metadata
-        destroy: function() {
-          module.verbose('Destroying previous module for', element);
-          $module
-          .removeData(moduleNamespace)
-          .off(eventNamespace)
-          ;
-          $html.off(eventNamespace, module.open);
-          $html.off(eventNamespace, module.event.keyup);
+          // #### Refresh
+          // Selectors or cached values sometimes need to refreshed
+          refresh: function () {
+            module.verbose('Refreshing elements', element);
+            $module = $(element);
+          },
 
-        },
+          // ### Custom
+          // #### By Event
+          // Sometimes it makes sense to call an event handler by its type if it is dependent on the event to behave properly
+          event: {
+            click: function (ev) {
+              module.verbose('Click on modal detected');
 
-        // #### Refresh
-        // Selectors or cached values sometimes need to refreshed
-        refresh: function() {
-          module.verbose('Refreshing elements', element);
-          $module = $(element);
-        },
+              if (module.setting('closeOnClick')) {
+                if (ev.target === element) {
+                  module.debug('Click on shader detected');
+                  module.close();
 
-        // ### Custom
-        // #### By Event
-        // Sometimes it makes sense to call an event handler by its type if it is dependent on the event to behave properly
-        event: {
-          click: function(ev) {
-            module.verbose('Click on modal detected');
+                }
+              }
+            },
 
-            if(settings.closeOnClick){
-              if(ev.target === element) {
-                module.debug('Click on shader detected');
-                module.close();
-
+            keyup: function (ev) {
+              module.verbose('Keyup detected');
+              if (module.setting('closeOnEscape')) {
+                if (ev.keyCode == 27) {
+                  module.debug('Escape press detected');
+                  module.close();
+                }
               }
             }
           },
 
-          keyup: function(ev){
-            module.verbose('Keyup detected');
-            if(settings.closeOnEscape){
-              if(ev.keyCode == 27){
-                module.debug('Escape press detected');
-                module.close();
-              }
-            }
-          }
-        },
+          // #### By Function
+          // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
+          open: function () {
+            module.debug('Opening the modal');
+            $.proxy(module.setting('onOpen'))();
+            $module.removeClass(className.hide);
+            setTimeout(function () {
+              $module.addClass(className.visible);
+              $html.addClass(className.open);
+            }, 300);
 
-        // #### By Function
-        // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
-        open: function() {
-          module.debug('Opening the modal');
-          $.proxy(settings.onOpen)();
-          $module.removeClass(className.hide);
-          setTimeout(function(){
-            $module.addClass(className.visible);
-            $html.addClass(className.open);
-          }, 300);
-
-        },
-        close: function() {
-          module.debug('Closing the modal');
-          $.proxy(settings.onClose)();
-          $module.removeClass(className.visible);
-
-          setTimeout(function(){
-            $html.removeClass(className.open);
-            $module.addClass(className.hide);
-
-          }, 300);
-        },
-        toggle: function(){
-          module.debug('Toggling the modal state');
-          isOpen ? module.close() : module.open();
-        },
-
-        is : {
-          open: function(){
-            module.debug('Checking if modal is open');
-            return $module.hasClass(className.hide);
           },
-          closed: function(){
-            module.debug('Checking if modal is closed');
-            return !$module.hasClass(className.hide);
-          }
-        },
-         // ### Standard
+          close: function () {
+            module.debug('Closing the modal');
+            $.proxy(module.setting('onClose'), module)();
+            $module.removeClass(className.visible);
 
-         // #### Data attributes
-         // Set module settings 
+            setTimeout(function () {
+              $html.removeClass(className.open);
+              $module.addClass(className.hide);
 
-         data: function(){
-          module.debug('Setting settings from data attributes')
-          $.each(metadata, function(index,value){
-            if(dataAttributes[index] !== undefined){
-              settings[index] = dataAttributes[index];
+            }, 300);
+          },
+          toggle: function () {
+            module.debug('Toggling the modal state');
+            isOpen ? module.close() : module.open();
+          },
+
+          is: {
+            open: function () {
+              module.debug('Checking if modal is open');
+              return $module.hasClass(className.hide);
+            },
+            closed: function () {
+              module.debug('Checking if modal is closed');
+              return !$module.hasClass(className.hide);
             }
-          });
-        },
+          },
+          // ### Standard
+
+          // #### Data attributes
+          // Set module settings 
+
+          data: function () {
+            module.debug('Setting data attributes settings')
+            $.each(metadata, function (index, value) {
+              if (dataAttributes[index] !== undefined) {
+                settings[index] = dataAttributes[index];
+              }
+            });
+          },
 
           // #### Setting
           // Module settings can be read or set using this method
           //
           // Settings can either be specified by modifying the module defaults, by initializing the module with a settings object, or by changing a setting by invoking this method
           // `$(.foo').example('setting', 'moduleName');`
-          setting: function(name, value) {
-            if( $.isPlainObject(name) ) {
+          setting: function (name, value) {
+            if ($.isPlainObject(name)) {
               $.extend(settings, name);
-            }
-            else if(value !== undefined) {
+            } else if (value !== undefined) {
               settings[name] = value;
-            }
-            else {
+            } else {
               return settings[name];
             }
           },
@@ -225,26 +203,23 @@
           // #### Internal
           // Module internals can be set or retrieved as well
           // `$(.foo').example('internal', 'behavior', function() { // do something });`
-          internal: function(name, value) {
-            if( $.isPlainObject(name) ) {
+          internal: function (name, value) {
+            if ($.isPlainObject(name)) {
               $.extend(module, name);
-            }
-            else if(value !== undefined) {
+            } else if (value !== undefined) {
               module[name] = value;
-            }
-            else {
+            } else {
               return module[name];
             }
           },
 
           // #### Debug
           // Debug pushes arguments to the console formatted as a debug statement
-          debug: function() {
-            if(settings.debug) {
-              if(settings.performance) {
+          debug: function () {
+            if (settings.debug) {
+              if (settings.performance) {
                 module.performance.log(arguments);
-              }
-              else {
+              } else {
                 module.debug = Function.prototype.bind.call(console.info, console, settings.name + ':');
                 module.debug.apply(console, arguments);
               }
@@ -253,12 +228,11 @@
 
           // #### Verbose
           // Calling verbose internally allows for additional data to be logged which can assist in debugging
-          verbose: function() {
-            if(settings.verbose && settings.debug) {
-              if(settings.performance) {
+          verbose: function () {
+            if (settings.verbose && settings.debug) {
+              if (settings.performance) {
                 module.performance.log(arguments);
-              }
-              else {
+              } else {
                 module.verbose = Function.prototype.bind.call(console.info, console, settings.name + ':');
                 module.verbose.apply(console, arguments);
               }
@@ -267,7 +241,7 @@
 
           // #### Error
           // Error allows for the module to report named error messages, it may be useful to modify this to push error messages to the user. Error messages are defined in the modules settings object.
-          error: function() {
+          error: function () {
             module.error = Function.prototype.bind.call(console.error, console, settings.name + ':');
             module.error.apply(console, arguments);
           },
@@ -275,49 +249,46 @@
           // #### Performance
           // This is called on each debug statement and logs the time since the last debug statement.
           performance: {
-            log: function(message) {
+            log: function (message) {
               var
               currentTime,
-              executionTime,
-              previousTime
-              ;
-              if(settings.performance) {
-                currentTime   = new Date().getTime();
-                previousTime  = time || currentTime;
+                executionTime,
+                previousTime;
+              if (settings.performance) {
+                currentTime = new Date().getTime();
+                previousTime = time || currentTime;
                 executionTime = currentTime - previousTime;
-                time          = currentTime;
+                time = currentTime;
                 performance.push({
-                  'Element'        : element,
-                  'Name'           : message[0],
-                  'Arguments'      : [].slice.call(message, 1) || '',
-                  'Execution Time' : executionTime
+                  'Element': element,
+                  'Name': message[0],
+                  'Arguments': [].slice.call(message, 1) || '',
+                  'Execution Time': executionTime
                 });
               }
               clearTimeout(module.performance.timer);
               module.performance.timer = setTimeout(module.performance.display, 100);
             },
-            display: function() {
+            display: function () {
               var
               title = settings.name + ':',
-              totalTime = 0
-              ;
+                totalTime = 0;
               time = false;
               clearTimeout(module.performance.timer);
-              $.each(performance, function(index, data) {
+              $.each(performance, function (index, data) {
                 totalTime += data['Execution Time'];
               });
               title += ' ' + totalTime + 'ms';
-              if(moduleSelector) {
+              if (moduleSelector) {
                 title += ' \'' + moduleSelector + '\'';
               }
-              if( (console.group !== undefined || console.table !== undefined) && performance.length > 0) {
+              if ((console.group !== undefined || console.table !== undefined) && performance.length > 0) {
                 console.groupCollapsed(title);
-                if(console.table) {
+                if (console.table) {
                   console.table(performance);
-                }
-                else {
-                  $.each(performance, function(index, data) {
-                    console.log(data['Name'] + ': ' + data['Execution Time']+'ms');
+                } else {
+                  $.each(performance, function (index, data) {
+                    console.log(data['Name'] + ': ' + data['Execution Time'] + 'ms');
                   });
                 }
                 console.groupEnd();
@@ -333,58 +304,47 @@
           // For example 'set text', will look for both `setText : function(){}`, `set: { text: function(){} }`
           // Invoke attempts to preserve the 'this' chaining unless a value is returned.
           // If multiple values are returned an array of values matching up to the length of the selector is returned
-          invoke: function(query, passedArguments, context) {
+          invoke: function (query, passedArguments, context) {
             var
             maxDepth,
-            found,
-            response
-            ;
+              found,
+              response;
             passedArguments = passedArguments || queryArguments;
-            context         = element         || context;
-            if(typeof query == 'string' && instance !== undefined) {
-              query    = query.split(/[\. ]/);
+            context = element || context;
+            if (typeof query == 'string' && instance !== undefined) {
+              query = query.split(/[\. ]/);
               maxDepth = query.length - 1;
-              $.each(query, function(depth, value) {
-                var camelCaseValue = (depth != maxDepth)
-                ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1)
-                : query
-                ;
-                if( $.isPlainObject( instance[value] ) && (depth != maxDepth) ) {
+              $.each(query, function (depth, value) {
+                var camelCaseValue = (depth != maxDepth) ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1) : query;
+                if ($.isPlainObject(instance[value]) && (depth != maxDepth)) {
                   instance = instance[value];
-                }
-                else if( $.isPlainObject( instance[camelCaseValue] ) && (depth != maxDepth) ) {
+                } else if ($.isPlainObject(instance[camelCaseValue]) && (depth != maxDepth)) {
                   instance = instance[camelCaseValue];
-                }
-                else if( instance[value] !== undefined ) {
+                } else if (instance[value] !== undefined) {
                   found = instance[value];
                   return false;
-                }
-                else if( instance[camelCaseValue] !== undefined ) {
+                } else if (instance[camelCaseValue] !== undefined) {
                   found = instance[camelCaseValue];
                   return false;
-                }
-                else {
+                } else {
                   module.error(error.method, query);
                   return false;
                 }
               });
-}
-if ( $.isFunction( found ) ) {
-  response = found.apply(context, passedArguments);
-}
-else if(found !== undefined) {
-  response = found;
-}
+            }
+            if ($.isFunction(found)) {
+              response = found.apply(context, passedArguments);
+            } else if (found !== undefined) {
+              response = found;
+            }
             // ### Invocation response
             // If a user passes in multiple elements invoke will be called for each element and the value will be returned in an array
             // For example ``$('.things').example('has text')`` with two elements might return ``[true, false]`` and for one element ``true``
-            if($.isArray(returnedValue)) {
+            if ($.isArray(returnedValue)) {
               returnedValue.push(response);
-            }
-            else if(returnedValue !== undefined) {
+            } else if (returnedValue !== undefined) {
               returnedValue = [returnedValue, response];
-            }
-            else if(response !== undefined) {
+            } else if (response !== undefined) {
               returnedValue = response;
             }
             return found;
@@ -393,88 +353,85 @@ else if(found !== undefined) {
 
 
 
-      // ### Determining Intent
+        // ### Determining Intent
 
-      // This is where the actual action occurs.
-      //     $('.foo').module('set text', 'Ho hum');
-      // If you call a module with a string parameter you are most likely trying to invoke a function
-      if(methodInvoked) {
-        if(instance === undefined) {
+        // This is where the actual action occurs.
+        //     $('.foo').module('set text', 'Ho hum');
+        // If you call a module with a string parameter you are most likely trying to invoke a function
+
+        if (methodInvoked) {
+          if (instance === undefined) {
+            module.initialize();
+          }
+          module.invoke(query);
+        }
+        // if no method call is required we simply initialize the plugin, destroying it if it exists already
+        else {
+          if (instance !== undefined) {
+            module.destroy();
+          }
           module.initialize();
         }
-        module.invoke(query);
-      }
-      // if no method call is required we simply initialize the plugin, destroying it if it exists already
-      else {
-        if(instance !== undefined) {
-          module.destroy();
-        }
-        module.initialize();
-      }
-    })
-;
+      });
+    return (returnedValue !== undefined) ? returnedValue : this;
 
-return (returnedValue !== undefined)
-? returnedValue
-: this
-;
+  };
 
-};
+  // ## No conflict support
 
-// ## No conflict support
-
-$.fn.modal.noConflict = function () {
-  $.fn.modal = old;
-  return this;
-}
-
-// ## Settings
-// It is necessary to include a settings object which specifies the defaults for your module
-$.fn.modal.settings = {
-
-  name  : 'Modal',
-  debug       : true,
-  verbose     : true,
-  performance : true,
-  namespace   : 'minkModal',
-
-  onChange     : function() {},
-  onOpen       : function() {},
-  onClose      : function() {},
-
-  autoOpen: false,
-  closeOnClick: false,
-  closeOnEscape: false,
-  
-  // ### Optional
-
-  // Selectors used by your module
-  selector    : {
-    close : '.ink-dismiss',
-    open: '#myTrigger'
-  },
-  // Error messages returned by the module
-  error: {
-    method : 'The method you called is not defined.'
-  },
-  // Class names which your module refers to
-  className   : {
-    open: 'ink-modal-is-open',
-    shade : 'ink-shade',
-    modal: 'ink-modal',
-    body: 'modal-body',
-    fade: 'fade',
-    visible: 'visible',
-    hide: 'hide-all'
-  },
-  // Metadata attributes stored or retrieved by your module. `$('.foo').data('value');`
-  metadata: {
-    autoOpen: 'autoOpen',
-    closeOnClick: 'closeOnClick',
-    closeOnEscape: 'closeOnEscape'
+  $.fn.modal.noConflict = function () {
+    module.debug('Setting noConflict mode');
+    $.fn.modal = old;
+    return this;
   }
-};
 
-return $.fn.modal;
+  // ## Settings
+  // It is necessary to include a settings object which specifies the defaults for your module
+  $.fn.modal.settings = {
+
+    name: 'Modal',
+    debug: true,
+    verbose: true,
+    performance: true,
+    namespace: 'minkModal',
+
+    onChange: function () {},
+    onOpen: function () {},
+    onClose: function () {},
+
+    autoOpen: false,
+    closeOnClick: false,
+    closeOnEscape: false,
+
+    // ### Optional
+
+    // Selectors used by your module
+    selector: {
+      close: '.ink-dismiss',
+      open: '#myTrigger'
+    },
+    // Error messages returned by the module
+    error: {
+      method: 'The method you called is not defined.'
+    },
+    // Class names which your module refers to
+    className: {
+      open: 'ink-modal-is-open',
+      shade: 'ink-shade',
+      modal: 'ink-modal',
+      body: 'modal-body',
+      fade: 'fade',
+      visible: 'visible',
+      hide: 'hide-all'
+    },
+    // Metadata attributes stored or retrieved by your module. `$('.foo').data('value');`
+    metadata: {
+      autoOpen: 'autoOpen',
+      closeOnClick: 'closeOnClick',
+      closeOnEscape: 'closeOnEscape'
+    }
+  };
+
+  return $.fn.modal;
 
 }));
