@@ -1,4 +1,4 @@
-mink
+What is mink
 ====
 
 mink is an open-source first approach on Ink's UI modules.
@@ -14,4 +14,4 @@ Where the goodness comes from:
 *    Data-attributes autoloading
 *    [Semantic UI](https://github.com/Semantic-Org/Semantic-UI) inspired architecture
 *    [UMD](https://github.com/umdjs/umd) wrapped modules
-*    NPM distribution of modules
+*    [NPM](https://www.npmjs.org) distribution of modules
