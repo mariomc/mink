@@ -167,11 +167,11 @@
           is: {
             open: function () {
               module.debug('Checking if modal is open');
-              return $module.hasClass(className.hide);
+              return !$module.hasClass(className.hide);
             },
             closed: function () {
               module.debug('Checking if modal is closed');
-              return !$module.hasClass(className.hide);
+              return $module.hasClass(className.hide);
             }
           },
           // ### Standard
@@ -421,10 +421,6 @@
     // Class names which your module refers to
     className: {
       open: 'ink-modal-is-open',
-      shade: 'ink-shade',
-      modal: 'ink-modal',
-      body: 'modal-body',
-      fade: 'fade',
       visible: 'visible',
       hide: 'hide-all'
     },
