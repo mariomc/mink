@@ -11,7 +11,9 @@
     "domready": "~0.2.13",
     "grunt": "~0.4.4",
     "grunt-ender": "~0.2.1",
-    "grunt-contrib-requirejs":"~0.4.3"
+    "grunt-contrib-requirejs":"~0.4.3",
+    "grunt-contrib-concat":"~0.4.0"
+
   },
   "repository": {
     "type": "git",

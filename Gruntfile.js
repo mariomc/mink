@@ -17,10 +17,17 @@ module.exports = function (grunt) {
 	        optimize: "uglify2"
 	      }
 	    }
+	  },
+	  concat: {
+	    all: {
+	      src: ['dist/**/*.css'],
+	      dest: 'all/mink.css',
+	    },
 	  }
 	});
 	grunt.loadNpmTasks('grunt-ender');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-	grunt.registerTask('default', ['ender']);
+	grunt.registerTask('default', ['ender', 'concat:all']);
 };
