@@ -24,4 +24,8 @@
 	// Programmatical definition comes first. Definition in data-attribute comes second. Zepto comes third for mobile first as a default, if present. Ender comes after as our packaged helper. jQuery after that. kInk and $ if all else fails.
 
 	window.mink.helper = window.mink.helper || window[currentScript.getAttribute('data-helper')] || window.Zepto || window.ender || window.jQuery || window.kink || window.$ || {};
+
+
+
+	return window.mink.helper;
 }));

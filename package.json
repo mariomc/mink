@@ -12,9 +12,6 @@
     "grunt": "~0.4.4",
     "grunt-ender": "~0.2.1"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/mariomc/mink.git"

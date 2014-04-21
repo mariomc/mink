@@ -7,6 +7,8 @@
         factory(window.mink.helper);
     }
 }(function ($) {
+	// Helper methods for Ender to replicate jQuery/Zepto base API.
+
 	var class2type = [],
 		type,
 		isFunction,
@@ -83,7 +85,6 @@
 	$.extend = extend;
 	$.proxy = proxy;
 
-	// Helper methods for Ender to replicate jQuery API.
 
 
 }));
