@@ -19,7 +19,7 @@ module.exports = function (grunt) {
 	    }
 	  },
 	  concat: {
-	    all: {
+	    css: {
 	      src: ['dist/**/*.css'],
 	      dest: 'all/mink.css',
 	    },
@@ -29,5 +29,5 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-	grunt.registerTask('default', ['ender', 'concat:all']);
+	grunt.registerTask('default', ['ender', 'concat:css']);
 };
