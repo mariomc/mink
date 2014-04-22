@@ -26,13 +26,13 @@ module.exports = function (grunt) {
 	  },
 	  bump: {
 	    options: {
-	      files: ['package.json', 'base/package.json', 'ender/package.json', 'dist/modal/package.json'],
+	      files: ['package.json', '*/package.json', '*/*/package.json'],
 	      updateConfigs: [],
 	      commit: true,
-	      commitMessage: 'Release v%VERSION%',
+	      commitMessage: 'Release %VERSION%',
 	      commitFiles: ['package.json', 'base/package.json', 'ender/package.json', 'dist/modal/package.json'],
 	      createTag: true,
-	      tagName: 'v%VERSION%',
+	      tagName: '%VERSION%',
 	      tagMessage: 'Version %VERSION%',
 	      push: false,
 	      pushTo: 'origin',
