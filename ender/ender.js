@@ -1,12 +1,4 @@
-(function (factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous this.
-        define(['base/base'], factory);
-    } else {
-        // Browser globals
-        factory(window.mink.helper);
-    }
-}(function ($) {
+(function ($) {
 	// Helper methods for Ender to replicate jQuery/Zepto base API.
 
 	var class2type = {},
@@ -76,14 +68,24 @@
 	  class2type[ "[object " + name + "]" ] = name.toLowerCase()
 	});
 
+	$.ender({
+		type: type,
+		each: each,
+		isFunction: isFunction,
+		isWindow: isWindow,
+		isArray: isArray,
+		isPlainObject: isPlainObject,
+		extend: extend,
+		proxy: proxy
+	})
 
-	$.type = type;
+/*	$.type = type;
 	$.each = each;
 	$.isFunction = isFunction;
 	$.isWindow = isWindow;
 	$.isArray = isArray;
 	$.isPlainObject = isPlainObject;
 	$.extend = extend;
-	$.proxy = proxy;
+	$.proxy = proxy;*/
 
-}));
+})(ender);

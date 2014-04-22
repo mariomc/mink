@@ -12,7 +12,8 @@
     "grunt": "~0.4.4",
     "grunt-ender": "~0.2.1",
     "grunt-contrib-requirejs":"~0.4.3",
-    "grunt-contrib-concat":"~0.4.0"
+    "grunt-contrib-concat":"~0.4.0",
+    "grunt-bump": "~0.0.13"
 
   },
   "repository": {

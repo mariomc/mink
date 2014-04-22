@@ -3,7 +3,7 @@ module.exports = function (grunt) {
 	  ender: {
 	    options: {
 	      output: "ender",
-	      dependencies: ["bean", "bonzo@v1.4.0", "qwery"]
+	      dependencies: ["bean", "bonzo@v1.4.0", "qwery", "ender-mink"]
 	    }
 	  },
 	  requirejs: {
@@ -23,11 +23,27 @@ module.exports = function (grunt) {
 	      src: ['dist/**/*.css'],
 	      dest: 'all/mink.css',
 	    },
-	  }
+	  },
+	  bump: {
+	    options: {
+	      files: ['package.json', 'base/package.json', 'ender/package.json', 'dist/modal/package.json'],
+	      updateConfigs: [],
+	      commit: true,
+	      commitMessage: 'Release v%VERSION%',
+	      commitFiles: ['package.json', 'base/package.json', 'ender/package.json', 'dist/modal/package.json'],
+	      createTag: true,
+	      tagName: 'v%VERSION%',
+	      tagMessage: 'Version %VERSION%',
+	      push: false,
+	      pushTo: 'origin',
+	      gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
+	    }
+	}
 	});
 	grunt.loadNpmTasks('grunt-ender');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
+	grunt.loadNpmTasks('grunt-bump');
 
 	grunt.registerTask('default', ['ender', 'concat:css']);
 };
