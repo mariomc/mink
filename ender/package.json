@@ -1,0 +1,13 @@
+{
+  "name": "ender-mink",
+  "description": "Ender API bridge for mink",
+  "url": "https://github.com/mariomc/mink",
+  "keywords": [
+    "ender",
+    "ink",
+    "mink"
+  ],
+  "main": "ender.js",
+  "ender": "./ender.js",
+  "version": "0.0.1"
+}
