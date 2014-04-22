@@ -1,0 +1,12 @@
+{
+  "name": "mink-modal",
+  "description": "Mink Modal module",
+  "url": "https://github.com/mariomc/mink",
+  "keywords": [
+    "ender",
+    "ink",
+    "mink"
+  ],
+  "main": "modal.js",
+  "version": "0.0.1"
+}
