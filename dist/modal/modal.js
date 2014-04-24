@@ -33,6 +33,7 @@
       returnedValue;
     // ## Singular
     // Iterate over all elements to initialize module
+
     $allModules
       .each(function () {
         var
@@ -50,7 +51,7 @@
         eventNamespace = '.' + namespace,
         moduleNamespace = namespace,
 
-        // Instance is stored and retreived in namespaced DOM metadata
+        // Instance is stored and retrieved in namespaced DOM metadata
         instance = $(this).data(moduleNamespace),
         element = this,
 
@@ -87,6 +88,7 @@
             instance = module;
             module.dataAttributes();
             $module.data(moduleNamespace, instance);
+            element.setAttribute('data-' + settings.name, '');
             if (module.setting('autoOpen')) module.open();
           },
 
@@ -95,6 +97,7 @@
           destroy: function () {
             module.verbose('Destroying previous module for', element);
             $module.removeData(moduleNamespace).off(eventNamespace);
+            element.removeAttribute('data-' + settings.name);
             $html.off(eventNamespace, module.open);
             $html.off(eventNamespace, module.event.keyup);
           },
@@ -353,7 +356,6 @@
             return found;
           }
         };
-
 
 
         // ### Determining Intent
