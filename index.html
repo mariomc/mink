@@ -29,7 +29,7 @@
             <p><button id="myTrigger" class="ink-button">Open Modal</button> <button class="ink-button" id="destroy">Destroy the modal</button> <button id="create" class="ink-button">Recreate the modal</button></p>
             <pre><code data-language="javascript">(function($){
     // Cache the selector
-    var $modalElement = $('#displayOnStart');
+    var $modalElement = $('#modalElement');
     // Start the module...
     $modalElement.modal();
     // Or simply start the module by calling a method on it. This will both create the modal (if not created) and open it
@@ -46,25 +46,28 @@
                         </div>
             </div>
             </div>
-                <div class="ink-shade fade hide-all" id="displayOnStart" data-auto-open="false">
+                <div class="ink-shade fade hide-all" id="modalElement" data-auto-open="false">
                     <div class="ink-modal push-center push-middle column-group vertical">
                         <div class="modal-header all-100">
                             <button class="modal-close ink-dismiss"></button>
                             <h5>Modal 1</h5>
                         </div>
                         <div class="modal-body all-100">
-                            <h3>Please confirm your previous choice</h3>
-                            <p>"No," said Peleg, "and he hasn't been baptized right either, or it would have washed some of that devil's blue off his face."</p>
-                            <p>
-                                <img src="http://placehold.it/800x400" style="width: 100%;" alt="">
-                            </p>
-                            <p>"Do tell, now," cried Bildad, "is this Philistine a regular member of Deacon Deuteronomy's meeting? I never saw him going there, and I pass it every Lord's day."</p>
-                            <p>"I don't know anything about Deacon Deuteronomy or his meeting," said I; "all I know is, that Queequeg here is a born member of the First Congregational Church. He is a deacon himself, Queequeg is."</p>
-                            <p>"I don't know anything about Deacon Deuteronomy or his meeting," said I; "all I know is, that Queequeg here is a born member of the First Congregational Church. He is a deacon himself, Queequeg is."</p>
-                            <p>"I don't know anything about Deacon Deuteronomy or his meeting," said I; "all I know is, that Queequeg here is a born member of the First Congregational Church. He is a deacon himself, Queequeg is."</p>
-                            <p>"I don't know anything about Deacon Deuteronomy or his meeting," said I; "all I know is, that Queequeg here is a born member of the First Congregational Church. He is a deacon himself, Queequeg is."</p>
-                            <p>"I don't know anything about Deacon Deuteronomy or his meeting," said I; "all I know is, that Queequeg here is a born member of the First Congregational Church. He is a deacon himself, Queequeg is."</p>
-
+                            <h3>Change your settings after runtime</h3>
+                            <p><button id="closeOnEscape" class="ink-button">Set closeOnEscape</button></p>
+                            <pre><code data-language="javascript">(function($){
+    $("#modalElement").modal('setting', 'closeOnEscape', true)
+})(mink.$);</code></pre>
+                            <p><button id="closeOnClick" class="ink-button">Set closeOnClick</button></p>
+                            <pre><code data-language="javascript">(function($){
+    $("#modalElement").modal('setting', 'closeOnClick', true)
+})(mink.$);</code></pre>
+                            <p><button id="callback" class="ink-button">Set onClose callback</button></p>
+                            <pre><code data-language="javascript">(function($){
+    $("#modalElement").modal('internal', 'onClose', function(){
+        alert("Modal Closing");
+    });
+})(mink.$);</code></pre>
                         </div>
                         <div class="modal-footer all-100">
                             <div class="push-right">
@@ -76,15 +79,17 @@
                 </div>
                 <script type="text/javascript">
                 (function($){
-                    var modal1 = $('#displayOnStart').modal();
-                    $('#displayOnStart').data('foo', {bar: 'baz'})
-                    $("#displayOnStart").modal('internal', 'debug', function(a,b){
-                        $('<p>' + a + '</p>').appendTo('#debug');
+                    var $modalElement = $('#modalElement');
+                    var modal1 = $('#modalElement').modal();
+                    $("#destroy").on('click', function(){$modalElement.modal('destroy')})
+                    $("#create").on('click', function(){$modalElement.modal('open')});
+                    $("#closeOnClick").on('click', function(){$modalElement.modal('setting', 'closeOnClick', true)});
+                    $("#closeOnEscape").on('click', function(){$modalElement.modal('setting', 'closeOnEscape', true)});
+                    $("#callback").on('click', function(){
+                        $modalElement.modal('setting', 'onClose', function(){
+                            alert("Modal Closing");
+                        });
                     });
-
-                    $("#destroy").on('click', function(){$("#displayOnStart").modal('destroy')})
-                    $("#create").on('click', function(){$("#displayOnStart").modal('open')})
-
                 })(mink.$)
                 </script>
         </div>
