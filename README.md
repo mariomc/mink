@@ -25,8 +25,6 @@ Where the goodness comes from:
 Installation
 ====
 
-TL;DR
-
 ````html
 <link rel="stylesheet" href="http://cdn.ink.sapo.pt/3.0.0/css/ink-flex.css">
 <!-- This CSS is only needed for this Proof of Concept -->
@@ -48,3 +46,5 @@ TL;DR
 
 Demo
 ====
+
+For a very rough demo, check [http://mariomc.github.io/mink/](http://mariomc.github.io/mink/).
