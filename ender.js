@@ -1,8 +1,8 @@
 /*!
   * =============================================================
   * Ender: open module JavaScript framework (https://enderjs.com)
-  * Build: ender build bean bonzo@v1.4.0 qwery ender-mink --output ender
-  * Packages: ender-core@2.0.0 ender-commonjs@1.0.7 bean@1.0.6 bonzo@1.4.0 qwery@3.4.1 ender-mink@0.1.0
+  * Build: ender build bean bonzo@v1.4.0 qwery ender-mink@0.1.1 --output ender
+  * Packages: ender-core@2.0.0 ender-commonjs@1.0.7 bean@1.0.6 bonzo@1.4.0 qwery@3.4.1 ender-mink@0.1.1
   * =============================================================
   */
 
@@ -2963,6 +2963,16 @@
       	  return store
       	}
       
+      	function contains(container, element){
+      		do {
+      			element = element.parentNode;
+      			if (element === container) {
+      				return true;
+      				}
+      			} while (element);
+      			return false;
+      	}
+      
       
       	isArray = Array.isArray || function(object){ return object instanceof Array };
       
@@ -2981,7 +2991,8 @@
       		isPlainObject: isPlainObject,
       		extend: extend,
       		proxy: proxy,
-      		camelCase: camelize
+      		camelCase: camelize,
+      		contains: contains
       	})
       
       	$.fn.data = function(name, value) {
@@ -3141,6 +3152,16 @@
       	  return store
       	}
       
+      	function contains(container, element){
+      		do {
+      			element = element.parentNode;
+      			if (element === container) {
+      				return true;
+      				}
+      			} while (element);
+      			return false;
+      	}
+      
       
       	isArray = Array.isArray || function(object){ return object instanceof Array };
       
@@ -3159,7 +3180,8 @@
       		isPlainObject: isPlainObject,
       		extend: extend,
       		proxy: proxy,
-      		camelCase: camelize
+      		camelCase: camelize,
+      		contains: contains
       	})
       
       	$.fn.data = function(name, value) {
