@@ -7,12 +7,12 @@
         factory();
     }
 }(function () {
-
 	// Get the helper API from the current script element. Just so you can redefine a custom helper without having to open a script tag before mink.
 
 	var currentScript = document.currentScript;
 	if(!currentScript){
-		var scripts = document.getElementByTagName('script');
+		// TODO: This approach has a shortcoming with AMD loading.
+		var scripts = document.getElementsByTagName('script');
 		currentScript = scripts[scripts.length - 1];
 	}
 
@@ -26,7 +26,6 @@
 	window.mink.helper = window.mink.helper || window[currentScript.getAttribute('data-helper')] || window.Zepto || window.ender || window.jQuery || window.kink || window.$ || {};
 
 	window.mink.$ = window.mink.helper;
-
 
 	return window.mink.helper;
 }));
