@@ -1,9 +1,8 @@
 module.exports = function (grunt) {
 	grunt.initConfig({
-	  ender: {
-	    options: {
-	      output: "ender",
-	      dependencies: ["bean", "bonzo@v1.4.0", "qwery", "ender-mink"]
+	  shell: {
+	    ender: {
+	      command: 'ender build bean bonzo@v1.4.0 qwery ender-mink --output ender --sandbox ender-core'
 	    }
 	  },
 	  requirejs: {
@@ -40,10 +39,10 @@ module.exports = function (grunt) {
 	    }
 	}
 	});
-	grunt.loadNpmTasks('grunt-ender');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-bump');
+	grunt.loadNpmTasks('grunt-shell');
 
-	grunt.registerTask('default', ['ender', 'concat:css']);
+	grunt.registerTask('default', ['shell', 'concat:css']);
 };
