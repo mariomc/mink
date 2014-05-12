@@ -175,6 +175,8 @@ $.fn.gallery = function (parameters) {
                 } else {
                   sel = [settings.selector.links];
                 }
+                
+                settings.container = element;
                 var $elems = $(sel.join());
 
                 gallery = new Gallery( $elems, settings);
