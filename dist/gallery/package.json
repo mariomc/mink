@@ -1,0 +1,12 @@
+{
+  "name": "mink-gallery",
+  "description": "Mink Gallery module",
+  "url": "https://github.com/mariomc/mink",
+  "keywords": [
+    "ender",
+    "ink",
+    "mink"
+  ],
+  "main": "gallery.js",
+  "version": "0.0.1"
+}
