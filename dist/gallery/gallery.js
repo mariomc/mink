@@ -39,23 +39,23 @@
   $.extend(Gallery.prototype, {
 
     modalFactory: function (obj, callback, factoryInterface, factory) {
-      if (!this.options.useMinkModal || factoryInterface) {
+      var _this = this;
+      var $modalTemplate = $('> .ink-shade', this.container);
+      if ( !$modalTemplate.length || !this.options.useMinkModal || factoryInterface) {
         return factory.call(this, obj, callback, factoryInterface);
       }
-      var that = this,
-      modalTemplate = $('> .ink-shade', this.container),
-      modal = $(modalTemplate)
+      
+      var modal = $modalTemplate
       .clone()
       .removeClass('hide-all')
       .on('click', function (event) {
-                        // Close modal if click is outside of modal-content:
-                        if (event.target === modal[0] ||
-                          event.target === modal.children()[0]) {
-                          event.preventDefault();
-                        event.stopPropagation();
-                        that.close();
-                      }
-                    }),
+        // Close modal if click is outside of modal-content:
+        if (event.target === modal[0] || event.target === modal.children()[0]) {
+          event.preventDefault();
+          event.stopPropagation();
+          _this.close();
+        }
+      }),
       element = factory.call(this, obj, function (event) {
         callback({
           type: event.type,
@@ -160,12 +160,12 @@ $.fn.gallery = function (parameters) {
 
                 var prop = ev ? $(this).data(settings.name.toLowerCase()) : settings.selector.links;
                 var sel = [];
-                if(prop && prop.indexOf(',') > -1) {
+                if( prop.indexOf(',') > -1 ) {
                   $.each(prop.split(/[, ]+/g), function(){
                     sel.push('[data-' + settings.name.toLowerCase() + '*="' + this + '"]');
                   });                 
                 } else {
-                    sel.push('[data-' + settings.name.toLowerCase() + '="' + prop + '"]');
+                    sel.push( prop ? '[data-' + settings.name.toLowerCase() + '="' + prop + '"]' : settings.selector.links);
                 }
 
                 if(ev) {
