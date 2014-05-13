@@ -10,7 +10,7 @@ The first stable release will feature a few ports of [Ink](https://github.com/sa
 How does it work
 ====
 
-__mink__ uses an helper API to work its magic: Zepto (with data plugin), Ender or jQuery. Just be sure to include it before mink's script and modules. 
+__mink__ uses an helper API to work its magic: Zepto (with data plugin), Ender (packaged as ender.js in the root of the repository) or jQuery. Just be sure to include it before mink's script and modules. 
 If, for some reason, you have more than one helper and want to define which should be used, either set ````window.mink.helper=jQuery ```` or set the name of the helper as a data-attribute on the mink base script element like so ````<script src="mink/base/base.js" data-helper="jQuery" ></script>````
 
 Where the goodness comes from:
@@ -22,29 +22,8 @@ Where the goodness comes from:
 *    [UMD](https://github.com/umdjs/umd) wrapped modules
 *    [NPM](https://www.npmjs.org) distribution of modules
 
-Installation
-====
-
-````html
-<link rel="stylesheet" href="http://cdn.ink.sapo.pt/3.0.0/css/ink-flex.css">
-<!-- This CSS is only needed for this Proof of Concept -->
-<link rel="stylesheet" href="http://rawgit.com/mariomc/mink/master/all/mink.css">
-<!-- Helper API. Use Ender, jQuery or Zepto (with data plugin) -->
-<script src="http://rawgit.com/mariomc/mink/master/ender.js"></script>
-<!-- Mink base --> 
-<script src="http://rawgit.com/mariomc/mink/base/base.js"></script>
-<!-- Mink modal -->
-<script src="http://rawgit.com/mariomc/mink/dist/modal/modal.js"></script>
-
-<!-- Your HTML -->
-<script>
-(function($){
-    $("#myModal").modal('open');
-})(mink.$);
-</script>
-````
 
 Demo
 ====
 
-For a very rough demo, check [http://mariomc.github.io/mink/](http://mariomc.github.io/mink/).
+For a very rough POC demo, [mess with the follow fiddle](http://jsbin.com/sifik/22/edit).
