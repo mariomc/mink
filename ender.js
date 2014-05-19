@@ -2954,6 +2954,16 @@
       	  })
       	  return store
       	}
+
+        function contains(container, element){
+          do {
+            element = element.parentNode;
+            if (element === container) {
+              return true;
+              }
+            } while (element);
+            return false;
+        }
       
       
       	isArray = Array.isArray || function(object){ return object instanceof Array };
@@ -2973,7 +2983,8 @@
       		isPlainObject: isPlainObject,
       		extend: extend,
       		proxy: proxy,
-      		camelCase: camelize
+      		camelCase: camelize,
+          contains: contains
       	})
       
       	$.fn.data = function(name, value) {

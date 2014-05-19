@@ -152,7 +152,6 @@ $.fn.gallery = function (parameters) {
                 // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
                 instance = module;
                 $module.data(moduleNamespace, instance);
-
               },
 
               create: function(ev){
@@ -193,6 +192,9 @@ $.fn.gallery = function (parameters) {
                 },
                 gallery: function() {
                   module.verbose('Getting the gallery instance');
+                  if(!gallery) {
+                    module.create();
+                  }
                   return gallery;
                 },
                 instance: function() {
@@ -205,11 +207,15 @@ $.fn.gallery = function (parameters) {
                 gallery.prev();
               },
               next: function(interval) {
+                module.debug('Moving to the next slide');
+                gallery.next();
+              },
+              play: function(interval) {
                 module.debug('Playing the slideshow in and interval of ', interval);
                 gallery.play(interval);
               },
-              pause: function(interval) {
-                module.debug('Pausing the slideshow for', interval);
+              pause: function() {
+                module.debug('Pausing the slideshow for', element);
                 gallery.pause();
               },
               add: function(list){
