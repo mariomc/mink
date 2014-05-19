@@ -2,7 +2,7 @@ module.exports = function (grunt) {
 	grunt.initConfig({
 	  shell: {
 	    ender: {
-	      command: 'ender build bean bonzo@v1.4.0 qwery ender-mink --output ender --sandbox ender-core'
+	      command: 'ender build bean bonzo@v1.4.0 qwery ender-mink --output ender --sandbox ender-core && ender refresh'
 	    }
 	  },
 	  requirejs: {
