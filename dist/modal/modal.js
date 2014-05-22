@@ -28,6 +28,7 @@
 
       // Preserve original arguments to determine if a method is being invoked
       query = arguments[0],
+      // Check if we've invoked a method
       methodInvoked = (typeof query == 'string'),
       queryArguments = [].slice.call(arguments, 1),
       returnedValue;
@@ -150,6 +151,8 @@
             }, settings.animationDuration);
 
           },
+
+          // ##### Close
           close: function () {
             module.debug('Closing the modal');
             if(module.is.open()) $.proxy(module.setting('onChange'))();
@@ -162,10 +165,13 @@
 
             }, settings.animationDuration);
           },
+
+          // ##### Toggle
           toggle: function () {
             module.debug('Toggling the modal state');
             isOpen ? module.close() : module.open();
           },
+
 
           is: {
             open: function () {
@@ -394,20 +400,18 @@
   // It is necessary to include a settings object which specifies the defaults for your module
   $.fn.modal.settings = {
 
+    // ### Required
+    // Used in debug statements to refer to the module itself
     name: 'Modal',
+    // Whether debug content should be outputted to console
     debug: true,
+    // Whether extra debug content should be outputted
     verbose: true,
+    // Whether to track performance data
     performance: true,
+    // A unique identifier used to namespace events,and preserve the module instance
     namespace: 'minkModal',
 
-    onChange: function () {},
-    onOpen: function () {},
-    onClose: function () {},
-
-    autoOpen: false,
-    closeOnClick: false,
-    closeOnEscape: false,
-    animationDuration: 300,
 
     // ### Optional
 
@@ -416,22 +420,38 @@
       close: '.ink-dismiss',
       open: '#myTrigger'
     },
+
     // Error messages returned by the module
     error: {
       method: 'The method you called is not defined.'
     },
+
     // Class names which your module refers to
     className: {
       open: 'ink-modal-is-open',
       visible: 'visible',
       hide: 'hide-all'
     },
+
     // Metadata attributes stored or retrieved by your module. `$('.foo').data('value');`
     metadata: {
       autoOpen: 'autoOpen',
       closeOnClick: 'closeOnClick',
       closeOnEscape: 'closeOnEscape'
-    }
+    },
+
+    // ### Callbacks
+    // Callbacks are often useful to include in your settings object
+    onChange: function () {},
+    onOpen: function () {},
+    onClose: function () {},
+
+    // ### Definition Specific
+    // You may also want to include settings specific to your module's function
+    autoOpen: false,
+    closeOnClick: false,
+    closeOnEscape: false,
+    animationDuration: 300
   };
 
   return $.fn.modal;
