@@ -1,17 +1,21 @@
-(function (factory) {
+(function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define(['helper/helper'], factory);
+    // AMD. Register as an anonymous this.
+    define(['mink'], function(mink){
+      mink.modal = factory(root, mink.$);
+      return mink.modal;
+    });
+  } else if (typeof exports === 'object') {
+    // Node/CommonJS
+    var mnk = require('../../base/mink.js');
+    (root.mink.fn || (root.mink.fn = {})).modal = module.exports = factory(root, mnk.$);
   } else {
     // Browser globals
-    factory(mink.helper);
+    root.mink.modal = factory(root, root.mink.$);
   }
-}(function ($) {
-
-
+}(global || this, function (root, $) {
   // Save old module definition
   var old = $.fn.modal;
-
 
   $.fn.modal = function (parameters) {
 
@@ -21,17 +25,19 @@
     // Store a reference to the module group, this can be useful to refer to other modules inside each module
     $allModules = $(this),
 
-      // Preserve selector from outside each scope and mark current time for performance tracking
-      moduleSelector = $allModules.selector || '',
-      time = new Date().getTime(),
-      performance = [],
+    // Preserve selector from outside each scope and mark current time for performance tracking
+    moduleSelector = $allModules.selector || '',
+    time = new Date().getTime(),
+    performance = [],
 
-      // Preserve original arguments to determine if a method is being invoked
-      query = arguments[0],
-      // Check if we've invoked a method
-      methodInvoked = (typeof query == 'string'),
-      queryArguments = [].slice.call(arguments, 1),
-      returnedValue;
+    // Preserve original arguments to determine if a method is being invoked
+    query = arguments[0],
+
+    // Check if we've invoked a method
+    methodInvoked = (typeof query === 'string'),
+    queryArguments = [].slice.call(arguments, 1),
+    returnedValue;
+
     // ## Singular
     // Iterate over all elements to initialize module
 
@@ -85,12 +91,15 @@
 
           instantiate: function () {
             module.verbose('Storing instance of module');
+
             // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
             instance = module;
             module.dataAttributes();
             $module.data(moduleNamespace, instance);
             element.setAttribute('data-' + settings.name, '');
-            if (module.setting('autoOpen')) module.open();
+            if (module.setting('autoOpen')) {
+              module.open();
+            }
           },
 
           // #### Destroy
@@ -129,7 +138,7 @@
             keyup: function (ev) {
               module.verbose('Keyup detected');
               if (module.setting('closeOnEscape')) {
-                if (ev.keyCode == 27) {
+                if (ev.keyCode === 27) {
                   module.debug('Escape press detected');
                   module.close();
                 }
@@ -141,7 +150,9 @@
           // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
           open: function () {
             module.debug('Opening the modal');
-            if(module.is.closed()) $.proxy(module.setting('onChange'))();
+            if(module.is.closed()) {
+              $.proxy(module.setting('onChange'))();
+            }
             $.proxy(module.setting('onOpen'))();
             $module.removeClass(className.hide);
 
@@ -155,7 +166,9 @@
           // ##### Close
           close: function () {
             module.debug('Closing the modal');
-            if(module.is.open()) $.proxy(module.setting('onChange'))();
+            if(module.is.open()) {
+              $.proxy(module.setting('onChange'))();
+            }
             $.proxy(module.setting('onClose'), module)();
             $module.removeClass(className.visible);
 
@@ -169,9 +182,12 @@
           // ##### Toggle
           toggle: function () {
             module.debug('Toggling the modal state');
-            isOpen ? module.close() : module.open();
+            if(isOpen) {
+              module.close();
+            } else {
+              module.open();
+            }
           },
-
 
           is: {
             open: function () {
@@ -183,6 +199,7 @@
               return $module.hasClass(className.hide);
             }
           },
+
           // ### Standard
 
           // #### Data attributes
@@ -319,18 +336,18 @@
           invoke: function (query, passedArguments, context) {
             var
             maxDepth,
-              found,
-              response;
+            found,
+            response;
             passedArguments = passedArguments || queryArguments;
             context = element || context;
-            if (typeof query == 'string' && instance !== undefined) {
+            if (typeof query === 'string' && instance !== undefined) {
               query = query.split(/[\. ]/);
               maxDepth = query.length - 1;
               $.each(query, function (depth, value) {
-                var camelCaseValue = (depth != maxDepth) ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1) : query;
-                if ($.isPlainObject(instance[value]) && (depth != maxDepth)) {
+                var camelCaseValue = (depth !== maxDepth) ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1) : query;
+                if ($.isPlainObject(instance[value]) && (depth !== maxDepth)) {
                   instance = instance[value];
-                } else if ($.isPlainObject(instance[camelCaseValue]) && (depth != maxDepth)) {
+                } else if ($.isPlainObject(instance[camelCaseValue]) && (depth !== maxDepth)) {
                   instance = instance[camelCaseValue];
                 } else if (instance[value] !== undefined) {
                   found = instance[value];
@@ -394,7 +411,7 @@
     module.debug('Setting noConflict mode');
     $.fn.modal = old;
     return this;
-  }
+  };
 
   // ## Settings
   // It is necessary to include a settings object which specifies the defaults for your module
