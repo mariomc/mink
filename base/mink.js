@@ -34,21 +34,30 @@
 
   // Warn the user if no helper is defined
   if (!mink.$) {
-    console.warn("No helper ($) available!");
+    console.warn('No helper ($) available!');
   }
 
   // This property will contain a pointer to all mink module constructors
   mink.fn = mink.fn || {};
 
-
   // A pointer for mink inside the helper.
   mink.$.fn.mink = mink;
 
-  // Module extension function
+  mink.defaults = mink.defaults || {
+    // Whether debug content should be outputted to console
+    debug: false,
+    // Whether extra debug content should be outputted
+    verbose: false,
+    // Whether to track performance data
+    performance: false,
+    // A flag to auto initialize the module
+    autoInit: true 
+  };
 
+  // Module extension function
   mink.boilerplate = function(module){
     var performance = [];
-    var moduleSelector = module.$element ? (module.$element.selector || '') : false;
+    var moduleSelector = module.$element ? ( module.$element.selector || '' ) : false;
     var dataAttributes = module.$element.data();
     var returnedValue;
     var boilerplate = {
@@ -194,12 +203,13 @@
             }
           });
         }
-        if ($.isFunction(found)) {
+        if ( $.isFunction(found) ) {
           response = found.apply(context, passedArguments);
-        } else if (found !== undefined) {
+        } 
+        else if (found !== undefined) {
           response = found;
         }
-        
+
         return response;
       },
       dataAttributes: function () {
@@ -218,7 +228,81 @@
     if(module.settings.autoInit) {
       module.initialize();
     }
-  }
+  };
+
+  // Module helper
+  mink.expose = function (name, Constructor) {
+    // Save old module definition
+    var old = $.fn[name];
+
+    mink.fn[name] = mink.$.fn[name] = function (parameters) {
+
+      var
+      // Store a reference to the module group, this can be useful to refer to other modules inside each module
+      $allModules = $(this),
+
+      // Preserve original arguments to determine if a method is being invoked
+      query = arguments[0],
+      queryArguments = [].slice.call(arguments, 1),
+
+      // Check if we've invoked a method
+      methodInvoked = (typeof query === 'string'),
+      returnedValue;
+
+      // Iterate over all elements to initialize module
+
+      $allModules
+        .each(function () {
+          var settings = ($.isPlainObject(parameters)) ? parameters : {};
+          settings.autoInit = false;
+          var module = new Constructor(this, settings);
+
+          if (methodInvoked) {
+            if (module.instance === undefined) {
+              module.initialize();
+            }
+            var response = module.invoke(query);
+
+            // ### Invocation response
+            // If a user passes in multiple elements invoke will be called for each element and the value will be returned in an array
+            // For example ``$('.things').example('has text')`` with two elements might return ``[true, false]`` and for one element ``true``
+            if ($.isArray(returnedValue)) {
+
+              returnedValue.push(response);
+            } else if (returnedValue !== undefined) {
+
+              returnedValue = [returnedValue, response];
+            } else if (response !== undefined) {
+
+              returnedValue = response;
+            }
+          }
+          // if no method call is required we simply initialize the plugin, destroying it if it exists already
+          else {
+            if (module.instance !== undefined) {
+              module.destroy();
+            }
+            module.initialize();
+          }
+      });
+      if ( returnedValue !== undefined ){
+
+        return returnedValue;
+      } else {
+
+        return this;
+      }
+    };
+
+    mink.$.fn[name].constructor = Constructor;
+
+    mink.$.fn[name].noConflict = function () {
+      module.debug('Setting noConflict mode');
+      mink.$.fn[name] = old;
+      return this;
+    };
+
+  };
 
   return mink;
 
