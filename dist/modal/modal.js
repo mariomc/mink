@@ -2,15 +2,15 @@
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous this.
     define(['../../base/mink'], function(mink){
-      return (window.mink.fn.modal = factory(mink.$));
+      return factory(mink.$);
     });
   } else if (typeof exports === 'object') {
     // Node/CommonJS
     var mnk = require('../../base/mink.js');
-    window.mink.fn.modal = factory(mnk.$);
+    factory(mnk.$);
   } else {
     // Browser globals
-    window.mink.fn.modal = factory(window.mink.$);
+    factory(window.mink.$);
   }
 }(function ($) {
   'use strict';
@@ -18,16 +18,8 @@
   var defaults = {
     // Used in debug statements to refer to the module itself
     name: 'Modal',
-    // Whether debug content should be outputted to console
-    debug: true,
-    // Whether extra debug content should be outputted
-    verbose: true,
-    // Whether to track performance data
-    performance: true,
     // A unique identifier used to namespace events,and preserve the module instance
     namespace: 'minkModal',
-    // A flag to autoinitialize the module
-    autoInit: true,
     // ### Optional
 
     // Selectors used by your module
@@ -74,7 +66,7 @@
 
     var
     // Extend settings to merge run-time settings with defaults
-    settings = $.extend(defaults, options || {}),
+    settings = $.extend($.fn.mink.defaults, defaults, options || {}),
 
     // Alias settings object for convenience and performance
     namespace = settings.namespace,
@@ -89,12 +81,11 @@
     $html = $('html'),
 
     // Instance is stored and retrieved in namespaced DOM metadata
-    instance = $element.data(moduleNamespace),
-
-    module;
+    instance = $element.data(moduleNamespace);
+    
     // ## Module Behavior
 
-    module = {
+    var module = {
       settings: settings,
       element: element,
       $element: $element,
@@ -229,74 +220,7 @@
     return module;
   }
 
-  // Save old module definition
-  var old = $.fn.modal;
-
-  $.fn.modal = function (parameters) {
-
-    var
-    // Store a reference to the module group, this can be useful to refer to other modules inside each module
-    $allModules = $(this),
-
-    // Preserve original arguments to determine if a method is being invoked
-    query = arguments[0],
-    queryArguments = [].slice.call(arguments, 1),
-
-    // Check if we've invoked a method
-    methodInvoked = (typeof query === 'string'),
-    returnedValue;
-
-    // Iterate over all elements to initialize module
-
-    $allModules
-      .each(function () {
-        var settings = ($.isPlainObject(parameters)) ? parameters : {};
-        settings.autoInit = false;
-        var module = new Modal(this, settings);
-
-        if (methodInvoked) {
-          if (module.instance === undefined) {
-            module.initialize();
-          }
-          
-          var response = module.invoke(query);
-
-          // ### Invocation response
-          // If a user passes in multiple elements invoke will be called for each element and the value will be returned in an array
-          // For example ``$('.things').example('has text')`` with two elements might return ``[true, false]`` and for one element ``true``
-          if ($.isArray(returnedValue)) {
-            returnedValue.push(response);
-          } else if (returnedValue !== undefined) {
-            returnedValue = [returnedValue, response];
-          } else if (response !== undefined) {
-            returnedValue = response;
-          }
-        }
-        // if no method call is required we simply initialize the plugin, destroying it if it exists already
-        else {
-          if (module.instance !== undefined) {
-            module.destroy();
-          }
-          module.initialize();
-        }
-      });
-    if (returnedValue !== undefined){
-      return returnedValue;
-    } else {
-      return this;
-    }
-
-  };
-
-  // ## No conflict support
-
-  $.fn.modal.noConflict = function () {
-    module.debug('Setting noConflict mode');
-    $.fn.modal = old;
-    return this;
-  };
-
-  $.fn.modal.defaults = defaults;
+  $.fn.mink.expose('modal', Modal);
 
   return Modal;
 
