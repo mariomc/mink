@@ -15,7 +15,7 @@
 }(function ($) {
   'use strict';
 
-  var defaults = {
+  var defaultSettings = {
     // Used in debug statements to refer to the module itself
     name: 'Modal',
     // A unique identifier used to namespace events,and preserve the module instance
@@ -61,164 +61,125 @@
     animationDuration: 300
   };
 
-  function Modal(element, options){
-    element = typeof element === 'string' ? $(element)[0] : element;
+  var Modal = $.fn.mink.factory(defaultSettings);
 
-    var
-    // Extend settings to merge run-time settings with defaults
-    settings = $.extend($.fn.mink.defaults, defaults, options || {}),
+  $.extend(Modal.prototype, {
+    $html : $('html'),
+    initialize: function () {
+      this.debug('Initializing module for', this.element);
+      this.$element.on('click' + this.eventNamespace, this.settings.selector.close, $.proxy(this.close, this));
+      this.$element.on('click' + this.eventNamespace, $.proxy(this.click, this));
+      this.$html.on('click' + this.eventNamespace, this.settings.selector.open, $.proxy(this.open, this));
+      this.$html.on('keyup' + this.eventNamespace, $.proxy(this.keyup, this));
+      this.instantiate();
+    },
 
-    // Alias settings object for convenience and performance
-    namespace = settings.namespace,
-    className = settings.className,
+    instantiate: function () {
+      this.verbose('Storing instance of module');
 
-    // Define namespaces for storing module instance and binding events
-    eventNamespace = '.' + namespace,
-    moduleNamespace = namespace,
+      // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
+      this.instance = this;
+      this.dataAttributes();
+      this.$element.data(this.moduleNamespace, this.instance);
+      this.element.setAttribute('data-' + this.settings.name, '');
+      if (this.setting('autoOpen')) {
+        this.open();
+      }
+    },
 
-    // Cache selectors using selector settings object for access inside instance of module
-    $element = $(element),
-    $html = $('html'),
+    // #### Destroy
+    // Removes all events and the instance copy from metadata
+    destroy: function () {
+      this.verbose('Destroying previous module for', this.element);
+      this.$element.removeData(this.moduleNamespace).off(this.eventNamespace);
+      this.element.removeAttribute('data-' + this.settings.name);
+      this.$html.off(this.eventNamespace, this.open);
+      this.$html.off(this.eventNamespace, this.keyup);
+    },
 
-    // Instance is stored and retrieved in namespaced DOM metadata
-    instance = $element.data(moduleNamespace);
-    
-    // ## Module Behavior
+    // #### Refresh
+    // Selectors or cached values sometimes need to refreshed
+    refresh: function () {
+      this.verbose('Refreshing elements', this.element);
+      $element = $(element);
+    },
 
-    var module = {
-      settings: settings,
-      element: element,
-      $element: $element,
-      instance: instance,
-      // ### Required
+    // ### Custom
+    // #### By Event
+    // Sometimes it makes sense to call an event handler by its type if it is dependent on the event to behave properly
+    click: function (ev) {
+      this.verbose('Click on modal detected');
 
-      // #### Initialize
-      // Initialize attaches events and preserves each instance in html metadata
-      initialize: function () {
-        module.debug('Initializing module for', element);
-        $element.on('click' + eventNamespace, settings.selector.close, module.close);
-        $element.on('click' + eventNamespace, module.event.click);
-        $html.on('click' + eventNamespace, settings.selector.open, module.open);
-        $html.on('keyup' + eventNamespace, module.event.keyup);
-        module.instantiate();
-      },
-
-      instantiate: function () {
-        module.verbose('Storing instance of module');
-
-        // The instance is just a copy of the module definition, we store it in metadata so we can use it outside of scope, but also define it for immediate use
-        instance = module.instance = module;
-        module.dataAttributes();
-        $element.data(moduleNamespace, instance);
-        element.setAttribute('data-' + settings.name, '');
-        if (module.setting('autoOpen')) {
-          module.open();
-        }
-      },
-
-      // #### Destroy
-      // Removes all events and the instance copy from metadata
-      destroy: function () {
-        module.verbose('Destroying previous module for', element);
-        $element.removeData(moduleNamespace).off(eventNamespace);
-        element.removeAttribute('data-' + settings.name);
-        $html.off(eventNamespace, module.open);
-        $html.off(eventNamespace, module.event.keyup);
-      },
-
-      // #### Refresh
-      // Selectors or cached values sometimes need to refreshed
-      refresh: function () {
-        module.verbose('Refreshing elements', element);
-        $element = $(element);
-      },
-
-      // ### Custom
-      // #### By Event
-      // Sometimes it makes sense to call an event handler by its type if it is dependent on the event to behave properly
-      event: {
-        click: function (ev) {
-          module.verbose('Click on modal detected');
-
-          if (module.setting('closeOnClick')) {
-            if (ev.target === element) {
-              module.debug('Click on shader detected');
-              module.close();
-
-            }
-          }
-        },
-
-        keyup: function (ev) {
-          module.verbose('Keyup detected');
-          if (module.setting('closeOnEscape')) {
-            if (ev.keyCode === 27) {
-              module.debug('Escape press detected');
-              module.close();
-            }
-          }
-        }
-      },
-
-      // #### By Function
-      // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
-      open: function () {
-        module.debug('Opening the modal');
-        if(module.is.closed()) {
-          $.proxy(module.setting('onChange'))();
-        }
-        $.proxy(module.setting('onOpen'))();
-        $element.removeClass(className.hide);
-
-        setTimeout(function () {
-          $element.addClass(className.visible);
-          $html.addClass(className.open);
-        }, settings.animationDuration);
-
-      },
-
-      // ##### Close
-      close: function () {
-        module.debug('Closing the modal');
-        if(module.is.open()) {
-          $.proxy(module.setting('onChange'))();
-        }
-        $.proxy(module.setting('onClose'), module)();
-        $element.removeClass(className.visible);
-
-        setTimeout(function () {
-          $html.removeClass(className.open);
-          $element.addClass(className.hide);
-
-        }, settings.animationDuration);
-      },
-
-      // ##### Toggle
-      toggle: function () {
-        module.debug('Toggling the modal state');
-        if(isOpen) {
-          module.close();
-        } else {
-          module.open();
-        }
-      },
-
-      is: {
-        open: function () {
-          module.debug('Checking if modal is open');
-          return !$element.hasClass(className.hide);
-        },
-        closed: function () {
-          module.debug('Checking if modal is closed');
-          return $element.hasClass(className.hide);
+      if (this.setting('closeOnClick')) {
+        if (ev.target === this.element) {
+          this.debug('Click on shader detected');
+          this.close();
         }
       }
-    };
+    },
 
-    $.fn.mink.boilerplate(module);
+    keyup: function (ev) {
+      this.verbose('Keyup detected');
+      if (this.setting('closeOnEscape')) {
+        if (ev.keyCode === 27) {
+          this.debug('Escape press detected');
+          this.close();
+        }
+      }
+    },
 
-    return module;
-  }
+    // #### By Function
+    // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
+    open: function () {
+      this.debug('Opening the modal');
+      if(this.isClosed()) {
+        $.proxy(this.setting('onChange'))();
+      }
+      $.proxy(this.setting('onOpen'))();
+      this.$element.removeClass(this.settings.className.hide);
+      var module = this;
+      setTimeout(function () {
+        module.$element.addClass(module.settings.className.visible);
+        module.$html.addClass(module.settings.className.open);
+      }, this.settings.animationDuration);
+
+    },
+
+    // ##### Close
+    close: function () {
+      this.debug('Closing the modal');
+      if(this.isOpen()) {
+        $.proxy(this.setting('onChange'))();
+      }
+      $.proxy(this.setting('onClose'), this)();
+      this.$element.removeClass(this.settings.className.visible);
+      var module = this;
+      setTimeout(function () {
+        module.$html.removeClass(module.settings.className.open);
+        module.$element.addClass(module.settings.className.hide);
+
+      }, this.settings.animationDuration);
+    },
+
+    // ##### Toggle
+    toggle: function () {
+      this.debug('Toggling the modal state');
+      if(isOpen) {
+        this.close();
+      } else {
+        this.open();
+      }
+    },
+
+    isOpen: function () {
+      this.debug('Checking if modal is open');
+      return !this.$element.hasClass(this.settings.className.hide);
+    },
+    isClosed: function () {
+      this.debug('Checking if modal is closed');
+      return this.$element.hasClass(this.settings.className.hide);
+    }
+  });
 
   $.fn.mink.expose('modal', Modal);
 
