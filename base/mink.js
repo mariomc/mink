@@ -43,7 +43,12 @@
   // A pointer for mink inside the helper.
   mink.$.fn.mink = mink;
 
+  // Mink default settings. Will be overriden by module defaults and runtime options.
   mink.defaults = mink.defaults || {
+    // The name of the module
+    name: 'mink',
+    // A unique identifier used to namespace events, and preserve the module instance
+    namespace: 'minkModule',
     // Whether debug content should be outputted to console
     debug: false,
     // Whether extra debug content should be outputted
@@ -51,7 +56,7 @@
     // Whether to track performance data
     performance: false,
     // A flag to auto initialize the module
-    autoInit: true 
+    autoInit: true
   };
 
   // Module extension function
@@ -224,10 +229,12 @@
         }
     };
 
-    mink.$.extend(module, boilerplate);
-    if(module.settings.autoInit) {
-      module.initialize();
+    for (prop in boilerplate) {
+        if(!module.hasOwnProperty(prop)) {
+            module[prop] = boilerplate[prop];
+        }
     }
+    return module;
   };
 
   // Module helper
