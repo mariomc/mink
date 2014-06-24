@@ -12,6 +12,7 @@
     window.mink = factory();
   }
 }(function () {
+  'use strict';
 
   // Get the helper API from the current script element. Just so you can redefine a custom helper without having to open a script tag before mink.
   function currentScript() {
@@ -59,20 +60,107 @@
     autoInit: true
   };
 
-  // Module extension function
-  mink.boilerplate = function(module){
-    var performance = [];
-    var moduleSelector = module.$element ? ( module.$element.selector || '' ) : false;
-    var dataAttributes = module.$element.data();
-    var returnedValue;
-    var boilerplate = {
+  // Method to create module constructors
+  mink.factory = function(defaults) {
+      defaults = defaults || {};
+    function mod(element, options){
+      var
+        $ = mink.$,
+        // Extend settings to merge run-time settings with defaults
+        settings = $.extend({}, $.fn.mink.defaults, defaults, options || {}),
+
+        // Alias settings object for convenience and performance
+        namespace = settings.namespace,
+        performance = [],
+        module = this;
+
+        // Define namespaces for storing module instance and binding events
+        this.queryArguments = [].slice.call(arguments, 3);
+        this.eventNamespace = '.' + namespace;
+        this.moduleNamespace = namespace;
+
+        // Cache selectors using selector settings object for access inside instance of module
+        this.element = element;
+        this.$element = $(element);
+        this.settings = settings;
+        this.attrs = this.$element.data();
+
+        // Instance is stored and retrieved in namespaced DOM metadata
+        this.instance = this.$element.data(this.moduleNamespace);
+
+        // #### Performance
+        // This is called on each debug statement and logs the time since the last debug statement.
+        this.performance = {
+          log: function (message) {
+            var
+              currentTime,
+              executionTime,
+              previousTime;
+            if (module.settings.performance) {
+              currentTime = new Date().getTime();
+              previousTime = module.time || currentTime;
+              executionTime = currentTime - previousTime;
+              module.time = currentTime;
+              performance.push({
+                'Element': element,
+                'Name': message[0],
+                'Arguments': [].slice.call(message, 1)[0] || '',
+                'Execution Time': executionTime
+              });
+            }
+            clearTimeout(module.performance.timer);
+            module.performance.timer = setTimeout(module.performance.display, 100);
+          },
+          display: function () {
+            var
+              title = module.settings.name + ':',
+              totalTime = 0;
+            module.time = false;
+            clearTimeout(module.performance.timer);
+            $.each(performance, function (index, data) {
+              totalTime += data['Execution Time'];
+            });
+            title += ' ' + totalTime + 'ms';
+            if (this.moduleSelector) {
+              title += ' \'' + this.moduleSelector + '\'';
+            }
+            if ((console.group !== undefined || console.table !== undefined) && performance.length > 0) {
+              console.groupCollapsed(title);
+              if (console.table) {
+                console.table(performance);
+              } else {
+                $.each(performance, function (index, data) {
+                  console.log(data['Name'] + ': ' + data['Execution Time'] + 'ms');
+                });
+              }
+              console.groupEnd();
+            }
+            performance = [];
+          }
+        };
+
+        // Initialize module if autoInit is set to true
+        if(settings.autoInit) {
+          this.initialize();
+        }
+
+      return this;
+    }
+
+    mod.prototype = {
+      initialize: function () {
+        console.warn('Your module is lacking an initialize method');
+      },
+      destroy: function () {
+        console.warn('Your module is lacking a destroy method');
+      },
       setting: function (name, value) {
         if ($.isPlainObject(name)) {
-          $.extend(module.settings, name);
+          $.extend(this.settings, name);
         } else if (value !== undefined) {
-          module.settings[name] = value;
+          this.settings[name] = value;
         } else {
-          return module.settings[name];
+          return this.settings[name];
         }
       },
 
@@ -81,23 +169,23 @@
       // `$(.foo').example('internal', 'behavior', function() { // do something });`
       internal: function (name, value) {
         if ($.isPlainObject(name)) {
-          $.extend(module, name);
+          $.extend(this, name);
         } else if (value !== undefined) {
-          module[name] = value;
+          this[name] = value;
         } else {
-          return module[name];
+          return this[name];
         }
       },
 
       // #### Debug
       // Debug pushes arguments to the console formatted as a debug statement
       debug: function () {
-        if (module.settings.debug) {
-          if (module.settings.performance) {
-            module.performance.log(arguments);
+        if (this.settings.debug) {
+          if (this.settings.performance) {
+            this.performance.log(arguments);
           } else {
-            module.debug = Function.prototype.bind.call(console.info, console, module.settings.name + ':');
-            module.debug.apply(console, arguments);
+            this.debug = Function.prototype.bind.call(console.info, console, this.settings.name + ':');
+            this.debug.apply(console, arguments);
           }
         }
       },
@@ -105,12 +193,12 @@
       // #### Verbose
       // Calling verbose internally allows for additional data to be logged which can assist in debugging
       verbose: function () {
-        if (module.settings.verbose && module.settings.debug) {
-          if (module.settings.performance) {
-            module.performance.log(arguments);
+        if (this.settings.verbose && this.settings.debug) {
+          if (this.settings.performance) {
+            this.performance.log(arguments);
           } else {
-            module.verbose = Function.prototype.bind.call(console.info, console, module.settings.name + ':');
-            module.verbose.apply(console, arguments);
+            this.verbose = Function.prototype.bind.call(console.info, console, this.settings.name + ':');
+            this.verbose.apply(console, arguments);
           }
         }
       },
@@ -118,60 +206,11 @@
       // #### Error
       // Error allows for the module to report named error messages, it may be useful to modify this to push error messages to the user. Error messages are defined in the modules settings object.
       error: function () {
-        module.error = Function.prototype.bind.call(console.error, console, module.settings.name + ':');
-        module.error.apply(console, arguments);
+        this.error = Function.prototype.bind.call(console.error, console, this.settings.name + ':');
+        this.error.apply(console, arguments);
       },
 
-      // #### Performance
-      // This is called on each debug statement and logs the time since the last debug statement.
-      performance: {
-        log: function (message) {
-          var
-          currentTime,
-            executionTime,
-            previousTime;
-          if (module.settings.performance) {
-            currentTime = new Date().getTime();
-            previousTime = module.time || currentTime;
-            executionTime = currentTime - previousTime;
-            module.time = currentTime;
-            performance.push({
-              'Element': module.element,
-              'Name': message[0],
-              'Arguments': [].slice.call(message, 1)[0] || '',
-              'Execution Time': executionTime
-            });
-          }
-          clearTimeout(module.performance.timer);
-          module.performance.timer = setTimeout(module.performance.display, 100);
-        },
-        display: function () {
-          var
-          title = module.settings.name + ':',
-            totalTime = 0;
-          module.time = false;
-          clearTimeout(module.performance.timer);
-          $.each(performance, function (index, data) {
-            totalTime += data['Execution Time'];
-          });
-          title += ' ' + totalTime + 'ms';
-          if (moduleSelector) {
-            title += ' \'' + moduleSelector + '\'';
-          }
-          if ((console.group !== undefined || console.table !== undefined) && performance.length > 0) {
-            console.groupCollapsed(title);
-            if (console.table) {
-              console.table(performance);
-            } else {
-              $.each(performance, function (index, data) {
-                console.log(data['Name'] + ': ' + data['Execution Time'] + 'ms');
-              });
-            }
-            console.groupEnd();
-          }
-          performance = [];
-        }
-      },
+
 
       // #### Invoke
       // Invoke is used to match internal functions to string lookups.
@@ -185,8 +224,9 @@
         maxDepth,
         found,
         response;
-        passedArguments = passedArguments || module.queryArguments;
-        context = module.element || context;
+        passedArguments = passedArguments || this.queryArguments;
+        context = this;
+        var module = this;
         if (typeof query === 'string' && module.instance !== undefined) {
           query = query.split(/[\. ]/);
           maxDepth = query.length - 1;
@@ -209,7 +249,7 @@
           });
         }
         if ( $.isFunction(found) ) {
-          response = found.apply(context, passedArguments);
+          response = found.apply(context, [passedArguments]);
         } 
         else if (found !== undefined) {
           response = found;
@@ -218,26 +258,22 @@
         return response;
       },
       dataAttributes: function () {
-        module.debug('Setting data attributes settings');
-        if(module.settings.metadata){
-          $.each(module.settings.metadata, function (index, value) {
-            if (dataAttributes[index] !== undefined) {
-              module.settings[index] = dataAttributes[index];
+        this.debug('Setting data attributes settings');
+        if(this.settings.metadata){
+          var module = this;
+          $.each(this.settings.metadata, function (index, value) {
+            if (module.attrs[index] !== undefined) {
+              module.settings[index] = module.attrs[index];
             }
           });
           } 
         }
     };
 
-    for (prop in boilerplate) {
-        if(!module.hasOwnProperty(prop)) {
-            module[prop] = boilerplate[prop];
-        }
-    }
-    return module;
+    return mod; 
   };
 
-  // Module helper
+  // Expose module in the window, inside the Mink object
   mink.expose = function (name, Constructor) {
     // Save old module definition
     var old = $.fn[name];
