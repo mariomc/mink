@@ -65,6 +65,7 @@
 
   $.extend(Modal.prototype, {
     $html : $('html'),
+
     initialize: function () {
       this.debug('Initializing module for', this.element);
       this.$element.on('click' + this.eventNamespace, this.settings.selector.close, $.proxy(this.close, this));
@@ -87,8 +88,6 @@
       }
     },
 
-    // #### Destroy
-    // Removes all events and the instance copy from metadata
     destroy: function () {
       this.verbose('Destroying previous module for', this.element);
       this.$element.removeData(this.moduleNamespace).off(this.eventNamespace);
@@ -97,16 +96,6 @@
       this.$html.off(this.eventNamespace, this.keyup);
     },
 
-    // #### Refresh
-    // Selectors or cached values sometimes need to refreshed
-    refresh: function () {
-      this.verbose('Refreshing elements', this.element);
-      $element = $(element);
-    },
-
-    // ### Custom
-    // #### By Event
-    // Sometimes it makes sense to call an event handler by its type if it is dependent on the event to behave properly
     click: function (ev) {
       this.verbose('Click on modal detected');
 
@@ -128,8 +117,6 @@
       }
     },
 
-    // #### By Function
-    // Other times events make more sense for methods to be called by their function if it is ambivalent to how it is invoked
     open: function () {
       this.debug('Opening the modal');
       if(this.isClosed()) {
@@ -142,10 +129,8 @@
         module.$element.addClass(module.settings.className.visible);
         module.$html.addClass(module.settings.className.open);
       }, this.settings.animationDuration);
-
     },
 
-    // ##### Close
     close: function () {
       this.debug('Closing the modal');
       if(this.isOpen()) {
@@ -161,10 +146,9 @@
       }, this.settings.animationDuration);
     },
 
-    // ##### Toggle
     toggle: function () {
       this.debug('Toggling the modal state');
-      if(isOpen) {
+      if(this.isOpen()) {
         this.close();
       } else {
         this.open();
@@ -175,6 +159,7 @@
       this.debug('Checking if modal is open');
       return !this.$element.hasClass(this.settings.className.hide);
     },
+    
     isClosed: function () {
       this.debug('Checking if modal is closed');
       return this.$element.hasClass(this.settings.className.hide);
