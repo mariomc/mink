@@ -1,0 +1,12 @@
+{
+  "name": "mink-datepicker",
+  "description": "Mink Datepicker module",
+  "url": "https://github.com/mariomc/mink",
+  "keywords": [
+    "ender",
+    "ink",
+    "mink"
+  ],
+  "main": "datepicker.js",
+  "version": "0.0.1"
+}
