@@ -74,75 +74,75 @@
         performance = [],
         module = this;
 
-        // Define namespaces for storing module instance and binding events
-        this.queryArguments = [].slice.call(arguments, 3);
-        this.eventNamespace = '.' + namespace;
-        this.moduleNamespace = namespace;
+      // Define namespaces for storing module instance and binding events
+      this.queryArguments = [].slice.call(arguments, 3);
+      this.eventNamespace = '.' + namespace;
+      this.moduleNamespace = namespace;
 
-        // Cache selectors using selector settings object for access inside instance of module
-        this.element = element;
-        this.$element = $(element);
-        this.settings = settings;
-        this.attrs = this.$element.data();
+      // Cache selectors using selector settings object for access inside instance of module
+      this.element = element;
+      this.$element = $(element);
+      this.settings = settings;
+      this.attrs = this.$element.data();
 
-        // Instance is stored and retrieved in namespaced DOM metadata
-        this.instance = this.$element.data(this.moduleNamespace);
+      // Instance is stored and retrieved in namespaced DOM metadata
+      this.instance = this.$element.data(this.moduleNamespace);
 
-        // #### Performance
-        // This is called on each debug statement and logs the time since the last debug statement.
-        this.performance = {
-          log: function (message) {
-            var
-              currentTime,
-              executionTime,
-              previousTime;
-            if (module.settings.performance) {
-              currentTime = new Date().getTime();
-              previousTime = module.time || currentTime;
-              executionTime = currentTime - previousTime;
-              module.time = currentTime;
-              performance.push({
-                'Element': element,
-                'Name': message[0],
-                'Arguments': [].slice.call(message, 1)[0] || '',
-                'Execution Time': executionTime
+      // #### Performance
+      // This is called on each debug statement and logs the time since the last debug statement.
+      this.performance = {
+        log: function (message) {
+          var
+            currentTime,
+            executionTime,
+            previousTime;
+          if (module.settings.performance) {
+            currentTime = new Date().getTime();
+            previousTime = module.time || currentTime;
+            executionTime = currentTime - previousTime;
+            module.time = currentTime;
+            performance.push({
+              'Element': element,
+              'Name': message[0],
+              'Arguments': [].slice.call(message, 1)[0] || '',
+              'Execution Time': executionTime
+            });
+          }
+          clearTimeout(module.performance.timer);
+          module.performance.timer = setTimeout(module.performance.display, 100);
+        },
+        display: function () {
+          var
+            title = module.settings.name + ':',
+            totalTime = 0;
+          module.time = false;
+          clearTimeout(module.performance.timer);
+          $.each(performance, function (index, data) {
+            totalTime += data['Execution Time'];
+          });
+          title += ' ' + totalTime + 'ms';
+          if (this.moduleSelector) {
+            title += ' \'' + this.moduleSelector + '\'';
+          }
+          if ((console.group !== undefined || console.table !== undefined) && performance.length > 0) {
+            console.groupCollapsed(title);
+            if (console.table) {
+              console.table(performance);
+            } else {
+              $.each(performance, function (index, data) {
+                console.log(data['Name'] + ': ' + data['Execution Time'] + 'ms');
               });
             }
-            clearTimeout(module.performance.timer);
-            module.performance.timer = setTimeout(module.performance.display, 100);
-          },
-          display: function () {
-            var
-              title = module.settings.name + ':',
-              totalTime = 0;
-            module.time = false;
-            clearTimeout(module.performance.timer);
-            $.each(performance, function (index, data) {
-              totalTime += data['Execution Time'];
-            });
-            title += ' ' + totalTime + 'ms';
-            if (this.moduleSelector) {
-              title += ' \'' + this.moduleSelector + '\'';
-            }
-            if ((console.group !== undefined || console.table !== undefined) && performance.length > 0) {
-              console.groupCollapsed(title);
-              if (console.table) {
-                console.table(performance);
-              } else {
-                $.each(performance, function (index, data) {
-                  console.log(data['Name'] + ': ' + data['Execution Time'] + 'ms');
-                });
-              }
-              console.groupEnd();
-            }
-            performance = [];
+            console.groupEnd();
           }
-        };
-
-        // Initialize module if autoInit is set to true
-        if(settings.autoInit) {
-          this.initialize();
+          performance = [];
         }
+      };
+
+      // Initialize module if autoInit is set to true
+      if(settings.autoInit) {
+        this.initialize();
+      }
 
       return this;
     }
@@ -225,7 +225,7 @@
         found,
         response;
         passedArguments = passedArguments || this.queryArguments;
-        context = this;
+        context = context || this.instance || this;
         var module = this;
         if (typeof query === 'string' && module.instance !== undefined) {
           query = query.split(/[\. ]/);
@@ -286,7 +286,6 @@
 
       // Preserve original arguments to determine if a method is being invoked
       query = arguments[0],
-      queryArguments = [].slice.call(arguments, 1),
 
       // Check if we've invoked a method
       methodInvoked = (typeof query === 'string'),
