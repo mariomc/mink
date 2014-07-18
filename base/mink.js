@@ -60,9 +60,11 @@
     autoInit: true
   };
 
+  mink._registry = mink._registry || {};
+
   // Method to create module constructors
   mink.factory = function(defaults) {
-      defaults = defaults || {};
+    defaults = defaults || {};
     function mod(element, options){
       var
         $ = mink.$,
@@ -74,10 +76,13 @@
         performance = [],
         module = this;
 
+      mink._registry[settings.name] = mink._registry[settings.name] || [];
       // Define namespaces for storing module instance and binding events
       this.queryArguments = [].slice.call(arguments, 3);
       this.eventNamespace = '.' + namespace;
       this.moduleNamespace = namespace;
+      this.allModules = mink._registry[settings.name];
+      this.moduleId = this.allModules.push(this) - 1;
 
       // Cache selectors using selector settings object for access inside instance of module
       this.element = element;
@@ -277,7 +282,6 @@
   mink.expose = function (name, Constructor) {
     // Save old module definition
     var old = $.fn[name];
-
     mink.fn[name] = mink.$.fn[name] = function (parameters) {
 
       var

@@ -1,12 +1,12 @@
 {
   "name": "mink-base",
-  "description": "Mink Base API",
+  "description": "Mink Main API",
   "url": "https://github.com/mariomc/mink",
   "keywords": [
     "ender",
     "ink",
     "mink"
   ],
-  "main": "base.js",
-  "version": "0.0.1"
+  "main": "mink.js",
+  "version": "0.0.2"
 }
