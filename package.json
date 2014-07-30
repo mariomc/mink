@@ -2,20 +2,19 @@
   "name": "mink",
   "version": "0.0.1",
   "description": "Open Source first UI framework",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "bean": "~1.0.6",
     "bonzo": "~1.4.0",
-    "qwery": "~3.4.1",
     "domready": "~0.2.13",
     "ender": "~2.0.5",
     "grunt": "~0.4.4",
+    "grunt-bump": "~0.0.13",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-requirejs": "~0.4.3",
+    "grunt-docco": "^0.3.3",
     "grunt-shell": "~0.7.0",
-    "grunt-contrib-requirejs":"~0.4.3",
-    "grunt-contrib-concat":"~0.4.0",
-    "grunt-bump": "~0.0.13"
-
+    "qwery": "~3.4.1"
   },
   "repository": {
     "type": "git",
