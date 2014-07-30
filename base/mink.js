@@ -1,34 +1,39 @@
+// # Mink Base module
+// This module defines utility methods and properties used by the framework
+
+// ## UMD Definition
+// Every module - even the base - is wrapped in an UMD definition, making it easier to integrate with your development process
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous this.
+    // ### AMD
     define([], function(){
       return (window.mink = factory());
     });
   } else if (typeof exports === 'object') {
-    // Node/CommonJS
+    // ### Node/CommonJS
     window.mink = module.exports = factory();
   } else {
-    // Browser globals
+    // ### Browser globals
     window.mink = factory();
   }
 }(function () {
   'use strict';
 
-  // Get the helper API from the current script element. Just so you can redefine a custom helper without having to open a script tag before mink.
+  // Gets the helper API from the current script element's data attribute. This way, you can define a specific helper without having to create a script tag before mink.
   function currentScript() {
     var cs = document.currentScript;
     if(!cs){
-      // TODO: This approach has a shortcoming with AMD loading.
+      // @TODO: This approach has a shortcoming with AMD loading.
       var scripts = document.getElementsByTagName('script');
       cs = scripts[scripts.length - 1];
     }
     return window[cs.getAttribute('data-helper')];
   }
 
-  // If mink is previously defined, use that definition.
+  // If mink is previously defined, we use that definition.
   var mink = window.mink || {};
 
-  // Helper hierarchy. 
+  // ## Helper hierarchy
   // Programmatical definition comes first. Definition in data-attribute comes second. Zepto comes third for mobile first as a default, if present. Ender comes after as our packaged helper. jQuery after that. kInk and $ if all else fails.
   mink.helper = mink.$ = mink.$ || currentScript() || window.Zepto || window.ender || window.jQuery || window.kink || window.$ || false;
 
@@ -38,13 +43,14 @@
     console.warn('No helper ($) available!');
   }
 
-  // This property will contain a pointer to all mink module constructors
+  // This property will contain pointers to all mink module constructors
   mink.fn = mink.fn || {};
 
-  // A pointer for mink inside the helper.
+  // A pointer for mink inside the helper API.
   mink.$.fn.mink = mink;
 
-  // Mink default settings. Will be overriden by module defaults and runtime options.
+  // ## Module Defaults
+  // mink modules default settings. These sensible defaults will be overriden by module defaults and runtime options
   mink.defaults = mink.defaults || {
     // The name of the module
     name: 'mink',
@@ -60,9 +66,12 @@
     autoInit: true
   };
 
+  // ## Module registry
+  // An internal registry of all the module instances in the page
   mink._registry = mink._registry || {};
 
-  // Method to create module constructors
+  // ## Module factory
+  // Method to create module constructors.
   mink.factory = function(defaults) {
     defaults = defaults || {};
     function mod(element, options){
@@ -76,26 +85,54 @@
         performance = [],
         module = this;
 
+      // Initialize the registry key for the modules if it's not set yets
       mink._registry[settings.name] = mink._registry[settings.name] || [];
+
+      // ### Module Properties and Methods
       // Define namespaces for storing module instance and binding events
       this.queryArguments = [].slice.call(arguments, 3);
-      this.eventNamespace = '.' + namespace;
+
+      // #### Module Namespace
+      // Used to identify the module metada within a namespace
       this.moduleNamespace = namespace;
+
+      // #### Module Event Namespace
+      // Used to identify all event handlers the module uses
+      this.eventNamespace = '.' + namespace;
+
+      // #### All Modules instances
+      // A reference to all modules instances of the same type. This is useful if your module wants to interact with other instances in the page
       this.allModules = mink._registry[settings.name];
+
+      // #### Module ID
+      // The module index inside the allModule reference
+      // @TODO: Get a better way to handle this
       this.moduleId = this.allModules.push(this) - 1;
 
-      // Cache selectors using selector settings object for access inside instance of module
+      // #### Element
+      // The element the module instance is refering to
       this.element = element;
+
+      // #### $element
+      // The module element wrapped as an helper API object
       this.$element = $(element);
+
+      // #### Settings
+      // A reference to the module settings
       this.settings = settings;
+
+      // #### Attributes
+      // Data attributes of the element
       this.attrs = this.$element.data();
 
-      // Instance is stored and retrieved in namespaced DOM metadata
+      // #### Instance
+      // The module instance is stored and retrieved in namespaced DOM metadata
       this.instance = this.$element.data(this.moduleNamespace);
 
       // #### Performance
-      // This is called on each debug statement and logs the time since the last debug statement.
+      // Called on each debug statement and logs the time since the last debug statement.
       this.performance = {
+        
         log: function (message) {
           var
             currentTime,
@@ -116,6 +153,7 @@
           clearTimeout(module.performance.timer);
           module.performance.timer = setTimeout(module.performance.display, 100);
         },
+        
         display: function () {
           var
             title = module.settings.name + ':',
@@ -153,12 +191,26 @@
     }
 
     mod.prototype = {
+
+      // #### Initialize Method
+      // This method is the first one to be called once a module is instantiated
+      // Every module should implement their own method.
       initialize: function () {
         console.warn('Your module is lacking an initialize method');
       },
+
+      // #### Destroy Method
+      // Every module should implement their own destroy method
+      // This method is responsible to restore the DOM to the same state as it was before the module was instantiated. This includes - but is not limited to - removing the following:
+      // * event listeners, 
+      // * removing CSS classes
+      // * generated DOM elements and attributes
       destroy: function () {
         console.warn('Your module is lacking a destroy method');
       },
+
+      // #### Setting Method
+      // Get or set setting properties
       setting: function (name, value) {
         if ($.isPlainObject(name)) {
           $.extend(this.settings, name);
@@ -169,9 +221,8 @@
         }
       },
 
-      // #### Internal
+      // #### Internal Method
       // Module internals can be set or retrieved as well
-      // `$(.foo').example('internal', 'behavior', function() { // do something });`
       internal: function (name, value) {
         if ($.isPlainObject(name)) {
           $.extend(this, name);
@@ -182,7 +233,7 @@
         }
       },
 
-      // #### Debug
+      // #### Debug Method
       // Debug pushes arguments to the console formatted as a debug statement
       debug: function () {
         if (this.settings.debug) {
@@ -195,7 +246,7 @@
         }
       },
 
-      // #### Verbose
+      // #### Verbose Method
       // Calling verbose internally allows for additional data to be logged which can assist in debugging
       verbose: function () {
         if (this.settings.verbose && this.settings.debug) {
@@ -208,16 +259,14 @@
         }
       },
 
-      // #### Error
+      // #### Error Method
       // Error allows for the module to report named error messages, it may be useful to modify this to push error messages to the user. Error messages are defined in the modules settings object.
       error: function () {
         this.error = Function.prototype.bind.call(console.error, console, this.settings.name + ':');
         this.error.apply(console, arguments);
       },
 
-
-
-      // #### Invoke
+      // #### Invoke Method
       // Invoke is used to match internal functions to string lookups.
       // `$('.foo').example('invoke', 'set text', 'Foo')`
       // Method lookups are lazy, looking for many variations of a search string
@@ -262,6 +311,9 @@
 
         return response;
       },
+
+      // #### DataAttributes Method
+      // Reads and sets the setting object depending on their data-attributes
       dataAttributes: function () {
         this.debug('Setting data attributes settings');
         if(this.settings.metadata){
@@ -271,17 +323,36 @@
               module.settings[index] = module.attrs[index];
             }
           });
-          } 
-        }
+        } 
+      },
+
+      // #### Throttling Method
+      // Throttles a function to a certain delay.
+      throttle: function(func, delay) {
+        var timer = null;
+
+        return function () {
+          var context = this, args = arguments;
+
+          if (timer == null) {
+            timer = setTimeout(function () {
+              func.apply(context, args);
+              timer = null;
+            }, delay);
+          }
+        };
+      }
     };
 
     return mod; 
   };
 
-  // Expose module in the window, inside the Mink object
+  // ## Expose Method
+  // Expose module in the window, inside the mink object and as a method of the helper API
   mink.expose = function (name, Constructor) {
-    // Save old module definition
+    // Saves the old module definition
     var old = $.fn[name];
+
     mink.fn[name] = mink.$.fn[name] = function (parameters) {
 
       var
@@ -300,7 +371,9 @@
       $allModules
         .each(function () {
           var settings = ($.isPlainObject(parameters)) ? parameters : {};
+
           settings.autoInit = false;
+          
           var module = new Constructor(this, settings);
 
           if (methodInvoked) {
@@ -340,8 +413,10 @@
       }
     };
 
+    // Expose the constructor
     mink.$.fn[name].constructor = Constructor;
 
+    // ## noConflict method for the helper API interface
     mink.$.fn[name].noConflict = function () {
       module.debug('Setting noConflict mode');
       mink.$.fn[name] = old;
