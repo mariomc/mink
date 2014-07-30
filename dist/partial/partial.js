@@ -1,105 +1,25 @@
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous this.
-    define(['../../base/mink'], function(mink){
-      return factory(mink.$);
+    define(['../../base/mink', './matchM'], function(mink, matchM){
+      return factory(mink.$, matchM);
     });
   } else if (typeof exports === 'object') {
     // Node/CommonJS
     var mnk = require('../../base/mink.js');
-    factory(mnk.$);
+    var mM = require('matchM.js');
+    factory(mnk.$, mM);
   } else {
     // Browser globals
-    factory(window.mink.$);
+    factory(window.mink.$, window.matchMedia);
   }
-}(function ($) {
+}(function ($, matchM) {
   'use strict';
-
-  /*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas, David Knight. Dual MIT/BSD license */
-
-  var matchM = window.matchMedia || (function(doc, undefined){
-
-    var docElem  = doc.documentElement,
-        refNode  = docElem.firstElementChild || docElem.firstChild,
-        // fakeBody required for <FF4 when executed in <head>
-        fakeBody = doc.createElement('body'),
-        div      = doc.createElement('div');
-
-    div.id = 'mq-test-1';
-    div.style.cssText = "position:absolute;top:-100em";
-    fakeBody.style.background = "none";
-    fakeBody.appendChild(div);
-
-    var mqRun = function ( mq ) {
-      div.innerHTML = '&shy;<style media="' + mq + '"> #mq-test-1 { width: 42px; }</style>';
-      docElem.insertBefore( fakeBody, refNode );
-      bool = div.offsetWidth === 42;
-      docElem.removeChild( fakeBody );
-      
-      return { matches: bool, media: mq };
-    },
-    
-    getEmValue = function () {
-      var ret,
-          body = docElem.body,
-          fakeUsed = false;
-
-      div.style.cssText = "position:absolute;font-size:1em;width:1em";
-
-      if( !body ) {
-        body = fakeUsed = doc.createElement( "body" );
-        body.style.background = "none";
-      }
-
-      body.appendChild( div );
-
-      docElem.insertBefore( body, docElem.firstChild );
-
-      if( fakeUsed ) {
-        docElem.removeChild( body );
-      } else {
-        body.removeChild( div );
-      }
-      
-      //also update eminpx before returning
-      ret = eminpx = parseFloat( div.offsetWidth );
-
-      return ret;
-    },
-    
-    //cached container for 1em value, populated the first time it's needed 
-    eminpx,
-    
-    // verify that we have support for a simple media query
-    mqSupport = mqRun( '(min-width: 0px)' ).matches;
-
-    return function ( mq ) {
-      if( mqSupport ) {
-        return mqRun( mq );
-      } else {
-        var min = mq.match( /\(min\-width[\s]*:[\s]*([\s]*[0-9\.]+)(px|em)[\s]*\)/ ) && parseFloat( RegExp.$1 ) + ( RegExp.$2 || "" ),
-            max = mq.match( /\(max\-width[\s]*:[\s]*([\s]*[0-9\.]+)(px|em)[\s]*\)/ ) && parseFloat( RegExp.$1 ) + ( RegExp.$2 || "" ),
-            minnull = min === null,
-            maxnull = max === null,
-            currWidth = doc.body.offsetWidth,
-            em = 'em';
-        
-        if( !!min ) { min = parseFloat( min ) * ( min.indexOf( em ) > -1 ? ( eminpx || getEmValue() ) : 1 ); }
-        if( !!max ) { max = parseFloat( max ) * ( max.indexOf( em ) > -1 ? ( eminpx || getEmValue() ) : 1 ); }
-        
-        bool = ( !minnull || !maxnull ) && ( minnull || currWidth >= min ) && ( maxnull || currWidth <= max );
-
-        return { matches: bool, media: mq };
-      }
-    };
-
-    }( document ));
 
   var defaultSettings = {
     name: 'Partial',
     namespace: 'minkPartial',
     eventNamespace: '.minkPartial',
-    method: 'html',
     namedBreakpoints: {
       tiny: 'screen and (max-width: 320px)',
       small: 'screen and (min-width: 321px) and (max-width: 640px)',
@@ -107,12 +27,47 @@
       large: 'screen and (min-width: 961px) and (max-width: 1260px)',
       xlarge: 'screen and (min-width: 1261px)'
     },
-    metadata: {
-      bp: 'bp'
-    },
     partials: {},
     onChange: function(){ }
   };
+
+  function removeQuotes(string) {
+    string = string.replace('\'', '', 'g').replace('\'', '', 'g');
+    return string;
+  }
+
+  function getBreakpoint() {
+    var style = null;
+    var ret;
+    if ( window.getComputedStyle && window.getComputedStyle(document.documentElement, '::before') ) {
+      style = window.getComputedStyle(document.documentElement, '::before');
+      style = style.content;
+    } else {
+      getComputedStyle = function(el) {
+        this.el = el;
+        this.getPropertyValue = function(prop) {
+          var re = /(\-([a-z]){1})/g;
+          if (re.test(prop)) {
+            prop = prop.replace(re, function () {
+              return arguments[2].toUpperCase();
+            });
+          }
+          return el.currentStyle[prop] ? el.currentStyle[prop] : null;
+        };
+        return this;
+      };
+      style = getComputedStyle(document.getElementsByTagName('head')[0]);
+      style = style.getPropertyValue('content');
+    }
+    try {
+      ret = JSON.parse( removeQuotes(style) );
+    } catch (ex) {
+      ret = {};
+    }
+    return ret;
+  }
+
+  $.extend(defaultSettings.namedBreakpoints, getBreakpoint());
 
   var Partial = $.fn.mink.factory(defaultSettings);
 
@@ -157,9 +112,8 @@
           cached_split  = scenario[0].split(/[\s,]+/g),
           path          = cached_split[0],
           ret           = {};
-          console.log(media_query);
-        ret[this.trim(media_query)] = this.trim(path);
-        return ret;
+      ret[this.trim(media_query)] = this.trim(path);
+      return ret;
     },
 
     obj: function(attr) {
@@ -185,7 +139,6 @@
       while (i--) {
         output.push(raw[i].substring(1, raw[i].length - 1));
       }
-      console.log(output);
       return output;
     },
 
@@ -220,12 +173,18 @@
       this.previousMediaHash = this.currentMediaHash;
     },
 
+    isMatch: function(breakpoint) {
+      if(typeof breakpoint === 'object') {
+        var minW = breakpoint['min']
+      }
+      return matchM(breakpoint).matches;
+    },
+
     update: function() {
       this.verbose('Updating node');
       for (var prop in this.settings.partials ) {
         var breakpoint = this.settings.namedBreakpoints[prop] || prop;
-        var isMatch = matchM(breakpoint).matches;
-        if(isMatch){
+        if(this.isMatch(breakpoint)){
           this.check(prop);
         }
       }
@@ -261,8 +220,8 @@
 
   });
 
-  $.fn.mink.expose('partial', Partial);
+$.fn.mink.expose('partial', Partial);
 
-  return Partial;
+return Partial;
 
 }));
