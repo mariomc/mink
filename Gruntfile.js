@@ -40,10 +40,10 @@ module.exports = function (grunt) {
   },
   docco: {
     debug: {
-      src: ['base/**/*.js', 'dist/**/*.js'],
+      src: ['base/**/*.js'],
       options: {
-        css: 'docco.css',
-        output: 'docs/'
+        css: 'spec/assets/docco.css',
+        output: 'spec/docs/'
       }
     }
   }

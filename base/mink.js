@@ -6,14 +6,17 @@
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
     // ### AMD
+    // To use with any AMD loader such as Require or Almond
     define([], function(){
       return (window.mink = factory());
     });
   } else if (typeof exports === 'object') {
     // ### Node/CommonJS
+    // To use with Browserify
     window.mink = module.exports = factory();
   } else {
     // ### Browser globals
+    // Plain and simple browser globals
     window.mink = factory();
   }
 }(function () {
@@ -418,7 +421,6 @@
 
     // ## noConflict method for the helper API interface
     mink.$.fn[name].noConflict = function () {
-      module.debug('Setting noConflict mode');
       mink.$.fn[name] = old;
       return this;
     };
