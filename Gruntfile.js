@@ -1,4 +1,6 @@
 module.exports = function (grunt) {
+  require('jit-grunt')(grunt);
+
   grunt.initConfig({
     shell: {
       ender: {
@@ -37,22 +39,20 @@ module.exports = function (grunt) {
         pushTo: 'origin',
         gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d' // options to use with '$ git describe'
       }
-  },
-  docco: {
-    debug: {
-      src: ['base/**/*.js'],
-      options: {
-        css: 'spec/assets/docco.css',
-        output: 'spec/docs/'
+    },
+    docco: {
+      debug: {
+        src: [
+          'base/**/*.js',
+          'spec/assets/*.js'
+        ],
+        options: {
+          css: 'spec/assets/docco.css',
+          output: 'spec/docs/'
+        }
       }
     }
-  }
   });
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-bump');
-  grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-docco');
 
 
   grunt.registerTask('default', ['shell', 'concat:css']);
