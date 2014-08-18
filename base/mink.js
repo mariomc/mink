@@ -356,7 +356,8 @@
     // Saves the old module definition
     var old = $.fn[name];
 
-    mink.fn[name] = mink.$.fn[name] = function (parameters) {
+    mink.fn[name] = Constructor;
+    mink.$.fn[name] = function (parameters) {
 
       var
       // Store a reference to the module group, this can be useful to refer to other modules inside each module
