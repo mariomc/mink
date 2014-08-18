@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Test</title>
+
+        <link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.0.5/css/ink-flex.css">
+        <script type="text/javascript" src="../ender.js"></script>
+
+        <script src="require.js"></script>
+
+        <style>
+        /* */
+        html:before {
+            content: '{"tiny": "screen and (max-width: 320px)","small": "screen and (min-width: 321px) and (max-width: 640px)","medium": "screen and (min-width: 641px) and (max-width: 960px)","large": "screen and (min-width: 961px) and (max-width: 1260px)","xlarge": "screen and (min-width: 1261px)"}';
+            display: none;
+        }
+        img {
+            margin: 0 auto;
+            display: block;
+        }
+        </style>
+        </head>
+
+    <body>
+    <div class="ink-grid">
+        <img data-partials="[http://lorempixel.com/100/100/cats/1/Tiny, (tiny)], [http://lorempixel.com/200/200/cats/2/Small, (small)], [http://lorempixel.com/300/300/cats/3/Medium, (screen and (min-width: 641px) and (max-width: 960px))], [http://lorempixel.com/400/400/cats/4/Large, (large)], [http://lorempixel.com/500/500/cats/5/Xlarge, (xlarge)]" />
+    </div>
+
+
+    <script>
+        require(['../dist/partial/partial'], function(Partial){
+            
+            // Use the constructor directly
+            // var resize = new Partial(document.querySelectorAll('img')[0]);
+
+            // Use as a method of mink helper ($) library
+            var resize = mink.$('img').partial();
+        });
+
+    </script>
+    </body>
+</html>
