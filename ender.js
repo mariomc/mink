@@ -2,7 +2,7 @@
   * =============================================================
   * Ender: open module JavaScript framework (https://enderjs.com)
   * Build: ender build bean bonzo@v1.4.0 qwery@3.4.2 ender-mink --output ender --sandbox ender-core
-  * Packages: ender-core@2.0.0 ender-commonjs@1.0.7 bean@1.0.6 bonzo@1.4.0 qwery@3.4.2 ender-mink@0.1.4
+  * Packages: ender-core@2.0.0 ender-commonjs@1.0.7 bean@1.0.14 bonzo@1.4.0 qwery@3.4.2 ender-mink@0.1.4
   * =============================================================
   */
 
@@ -319,7 +319,7 @@
               'input invalid '                                                 + // form elements
               'touchstart touchmove touchend touchcancel '                     + // touch
               'gesturestart gesturechange gestureend '                         + // gesture
-              'textinput'                                                      + // TextEvent
+              'textinput '                                                     + // TextEvent
               'readystatechange pageshow pagehide popstate '                   + // window
               'hashchange offline online '                                     + // window
               'afterprint beforeprint '                                        + // printing
@@ -1011,6 +1011,7 @@
       
         return bean
       });
+      
     },
     'src/ender': function (module, exports, require, global) {
       !function ($) {
