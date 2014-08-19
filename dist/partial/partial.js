@@ -220,8 +220,8 @@
 
   });
 
-$.fn.mink.expose('partial', Partial);
+  $.fn.mink.expose('partial', Partial);
 
-return Partial;
+  return Partial;
 
 }));

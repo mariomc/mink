@@ -1,0 +1,12 @@
+{
+  "name": "mink-partial",
+  "description": "Mink Partial module",
+  "url": "https://github.com/mariomc/mink",
+  "keywords": [
+    "ender",
+    "ink",
+    "mink"
+  ],
+  "main": "partial.js",
+  "version": "0.0.1"
+}
