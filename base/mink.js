@@ -49,7 +49,10 @@
   // This property will contain pointers to all mink module constructors
   mink.fn = mink.fn || {};
 
-  // A pointer for mink inside the helper API.
+  // This property will contain pointers to all mink module methods in the helper library
+  mink.$fn = mink.$fn || {};
+
+  // A pointer for mink inside the helper library.
   mink.$.fn.mink = mink;
 
   // ## Module Defaults
@@ -66,7 +69,9 @@
     // Whether to track performance data
     performance: false,
     // A flag to auto initialize the module
-    autoInit: true
+    autoInit: true,
+    // A flag to  mark the module as being autoloaded
+    autoloaded: false
   };
 
   // ## Module registry
@@ -300,7 +305,7 @@
               found = module.instance[camelCaseValue];
               return false;
             } else {
-              module.error(error.method, query);
+              module.error('The method you called is not defined.', query);
               return false;
             }
           });
@@ -347,6 +352,9 @@
       }
     };
 
+    // Expose the module defaults as a property of the constructor
+    mod._defaults = defaults;
+
     return mod; 
   };
 
@@ -354,10 +362,13 @@
   // Expose module in the window, inside the mink object and as a method of the helper API
   mink.expose = function (name, Constructor) {
     // Saves the old module definition
-    var old = $.fn[name];
+    var old = mink.$.fn[name];
 
     mink.fn[name] = Constructor;
-    mink.$.fn[name] = function (parameters) {
+
+    Constructor._name = name;
+
+    mink.$fn[name] = mink.$.fn[name] = function (parameters) {
 
       var
       // Store a reference to the module group, this can be useful to refer to other modules inside each module
