@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Mink Example module</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="mink.html">
+                mink.js
+              </a>
+            
+              
+              <a class="source" href="module.commented.html">
+                module.commented.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <h1 id="mink-example-module">Mink Example module</h1>
+<p>This module illustrates the internals of a mink module</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h2 id="umd-definition">UMD Definition</h2>
+<p>Every module - even the base - is wrapped in an UMD definition, making it easier to integrate with your development process</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(factory)</span> </span>{
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> define === <span class="hljs-string">'function'</span> &amp;&amp; define.amd) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h3 id="amd">AMD</h3>
+<p>To use with any AMD loader such as Require or Almond</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    define([<span class="hljs-string">'../../base/mink'</span>], <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(mink)</span></span>{
+      <span class="hljs-keyword">return</span> factory(mink.$);
+    });
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> exports === <span class="hljs-string">'object'</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h3 id="node-commonjs">Node/CommonJS</h3>
+<p>To use with Browserify</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> mnk = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../../base/mink.js'</span>);
+    factory(mnk.$);
+  } <span class="hljs-keyword">else</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h3 id="browser-globals">Browser globals</h3>
+<p>Plain and simple browser globals</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    factory(<span class="hljs-built_in">window</span>.mink.$);
+  }
+}(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">($)</span> </span>{
+<span class="hljs-pi">  'use strict'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Every module should define their defaults</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> defaultSettings = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Used in debug statements to refer to the module itself</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    name: <span class="hljs-string">'Test'</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>A unique identifier used to namespace events,and preserve the module instance</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    namespace: <span class="hljs-string">'minkTest'</span>
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Use mink factory to create your base module constructor.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>This adds several properties and methods to help you develop smoothly</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> Test = $.fn.mink.factory(defaultSettings);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>To add methods to your constructor, simply extend its prototype</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $.extend(Test.prototype, {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h1 id="required-methods">Required Methods</h1>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Your module should contain an initilize method, which will be the first method called</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> <span class="hljs-built_in">module</span> = <span class="hljs-keyword">this</span>;
+      <span class="hljs-keyword">this</span>.debug(<span class="hljs-string">'Initializing module for'</span>, <span class="hljs-keyword">this</span>.element);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Event listeners should be attached to elements with the eventNamespace. This makes it easier to destroy the instance</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.$element.on(<span class="hljs-string">'click'</span> + <span class="hljs-keyword">this</span>.eventNamespace, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+        <span class="hljs-built_in">module</span>.counter = <span class="hljs-built_in">module</span>.counter ? ( <span class="hljs-built_in">module</span>.counter + <span class="hljs-number">1</span> ) : <span class="hljs-number">1</span>; 
+        <span class="hljs-built_in">module</span>.invoke(<span class="hljs-string">'setText'</span>, <span class="hljs-built_in">module</span>.counter);
+      })
+      <span class="hljs-keyword">this</span>.instantiate();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>An instantiate method reads the settings from the module metadata (if any) and saves a reference of the instance in the element’s metadata</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    instantiate: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">this</span>.verbose(<span class="hljs-string">'Storing instance of module'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>@TODO A better name for this method. This reads the element’s metadata and sets the setting object accordingly</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.dataAttributes();
+      <span class="hljs-keyword">this</span>.instance = <span class="hljs-keyword">this</span>;
+      <span class="hljs-keyword">this</span>.$element.data(<span class="hljs-keyword">this</span>.moduleNamespace, <span class="hljs-keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Set an html attribute to mark the element being in use. This is useful if you want to select all module elements using a css selector</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">this</span>.element.setAttribute(<span class="hljs-string">'data-'</span> + <span class="hljs-keyword">this</span>.settings.name, <span class="hljs-string">''</span>);
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Your module should contain a destroy method to remove the markup, events and atributes it added.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    destroy: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">this</span>.debug(<span class="hljs-string">'Destroying module instance for '</span>, <span class="hljs-keyword">this</span>.element );
+      <span class="hljs-keyword">this</span>.$element.removeData(<span class="hljs-keyword">this</span>.moduleNamespace).off(<span class="hljs-keyword">this</span>.eventNamespace);
+      <span class="hljs-keyword">this</span>.element.removeAttribute(<span class="hljs-string">'data-'</span> + <span class="hljs-keyword">this</span>.settings.name);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Delete the reference from the allModules array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">delete</span> <span class="hljs-keyword">this</span>.allModules[<span class="hljs-keyword">this</span>.moduleId];
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h1 id="optional-methods">Optional methods</h1>
+<p>Custom methods should be declared as camelCase and use commonly used action verbs like ‘has’, ‘is’, ‘get’, ‘set’.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Gets the text of an element</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getText: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">this</span>.verbose(<span class="hljs-string">'Getting text value'</span>);
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.$element.text();
+    },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>Sets the text of an element</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    setText: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(text)</span> </span>{
+      <span class="hljs-keyword">this</span>.verbose(<span class="hljs-string">'Setting text value to'</span>, text);
+      <span class="hljs-keyword">this</span>.$element.text(text);
+    }
+
+  });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>Expose the module on the window, the mink global object and as an fn inside the helper ($) library.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $.fn.mink.expose(<span class="hljs-string">'test'</span>, Test);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>Always return the constructor so you can require it</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">return</span> Test;
+
+}));</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
