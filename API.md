@@ -1,6 +1,6 @@
 # $ - Helper library
 
-mink needs an helper library to work it's magic. If you need one, we package an Ender build in the project that gets the job done. If you're already using jQuery or Zepto in your project, go ahead and simply include mink base and the modules you'll use. No need for the overhead of another library.
+mink needs an helper library to work its magic. If you need one, we package an Ender build in the project that gets the job done. If you're already using jQuery or Zepto in your project, go ahead and simply include mink base and the modules you'll use. No need for the overhead of another library.
 
 # Global object
 

@@ -1,17 +1,14 @@
-What is mink
-====
+#What is mink
 
-mink is an open-source first approach on a front-end framework. It strives to leverage the good ideas and latest trends born in the JS community to deliver a fresh, modular and portable UI framework, wrapped in a friendly API package.
+**mink** is an open-source first approach on a front-end framework. It strives to leverage the good ideas and latest trends born in the JS community to deliver a fresh, modular and portable UI framework, wrapped in a friendly API package.
 
-This project is under high development and is not yet production ready. Check the [issue queue](https://github.com/mariomc/mink/issues) for the feature roadmap. Participation and collaboration will be much welcome!
+This project is under high development and not yet production ready. Check the [issue queue](https://github.com/mariomc/mink/issues) for the feature roadmap, the [samples folder](samples/) for a feel of what's to come. Participation and collaboration will be much welcome!
 
-The first stable release will feature a few ports of [Ink](https://github.com/sapo/Ink) modules, an integration of an Open Source project, the documentation of the API architecture and some build tools.
+The first tagged release will feature a few ports of [Ink](https://github.com/sapo/Ink) modules, integrations of some Open Source projects, API architecture and some build tools.
 
-How does it work
-====
+#How does it work
 
-__mink__ uses an helper API to work its magic: Zepto (with data plugin), Ender (packaged as ender.js in the root of the repository) or jQuery. Just be sure to include it before mink's script and modules. 
-If, for some reason, you have more than one helper and want to define which should be used, either set ````window.mink.helper=jQuery ```` or set the name of the helper as a data-attribute on the mink base script element like so ````<script src="mink/base/base.js" data-helper="jQuery" ></script>````
+**mink** needs an helper (**$**) library to work its magic. If you need one, we package an [Ender build](ender.js) in the project that gets the job done. If you're already using jQuery or Zepto in your project, go ahead and simply include **mink** base and the modules you'll use. No need for the overhead of another library.
 
 Where the goodness comes from:
 *    [Ink](https://github.com/sapo/Ink)'s CSS and grid
@@ -23,7 +20,7 @@ Where the goodness comes from:
 *    [NPM](https://www.npmjs.org) distribution of modules
 
 
-Demo
+Samples and Spec
 ====
 
-For a very rough POC demo, [mess with the follow fiddle](http://jsbin.com/sifik/22/edit).
+You can find some samples in the [sample folder](samples/) and a [commented spec](http://rawgit.com/mariomc/mink/master/spec/docs/mink.html) in the repository
