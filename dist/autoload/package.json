@@ -1,0 +1,12 @@
+{
+  "name": "mink-autoload",
+  "description": "Mink Autoload module",
+  "url": "https://github.com/mariomc/mink",
+  "keywords": [
+    "ender",
+    "ink",
+    "mink"
+  ],
+  "main": "autoload.js",
+  "version": "0.0.1"
+}
