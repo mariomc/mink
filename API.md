@@ -16,6 +16,10 @@ A reference to the helper (**$**) library being used by mink and its modules.
 
 An object containing a pointer to all mink module constructors.
 
+## mink.$fn
+
+An object containing a pointer to mink module methods in the helper library.
+
 ## mink.$.fn.mink
 
 A reference to mink inside the helper (**$**) library.
