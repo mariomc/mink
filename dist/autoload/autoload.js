@@ -58,7 +58,7 @@
           return;
         }
 
-        var selector = Constructor._defaults.autoloadSelector || '[class^="mink-' + moduleName + '"], [data-autoload="' + moduleName + '"]';
+        var selector = Constructor._defaults.autoloadSelector || '[class~="mink-' + moduleName + '"], [data-autoload="' + moduleName + '"]';
         
         if ( _this.settings.modules && _this.settings.modules[Constructor._name] ) {
           selector = _this.settings.modules[Constructor._name];
