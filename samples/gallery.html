@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>Gallery Test</title>
+
+  <link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.0.0/css/ink.css">
+  <link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.0.0/css/ink-flex.css">
+  <link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.0.0/css/font-awesome.css">
+  <link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.0.0/css/font-awesome.css">
+  <link rel="stylesheet" type="text/css" href="http://dbushell.github.io/Pikaday/css/pikaday.css">
+  <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/rainbow/1.2.0/themes/monokai.css">
+  <link rel="stylesheet" href="http://cdn.ink.sapo.pt/3.0.0/css/ink-flex.css">
+  <link rel="stylesheet" type="text/css" href="http://cdn.ink.sapo.pt/3.0.0/css/font-awesome.css">
+
+  <!-- This CSS is only needed for this Proof of Concept -->
+  <link rel="stylesheet" href="http://rawgit.com/mariomc/mink/master/dist/modal/modal.css">
+  <link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+  <script type="text/javascript" src="../ender.js"></script>
+
+  <script src="require.js"></script>
+
+</head>
+
+<body >
+  <div id="blueimp-gallery" class="blueimp-gallery">
+    <!-- The container for the modal slides -->
+    <div class="slides"></div>
+    <!-- Controls for the borderless lightbox -->
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+    <!-- The modal dialog template to be used to wrap the lightbox content -->
+    <div class="ink-shade fade hide-all" data-auto-open="false">
+      <div class="ink-modal push-center push-middle column-group vertical">
+        <div class="modal-header all-100">
+          <button class="modal-close ink-dismiss"></button>
+          <h5 class="modal-title">Modal 1</h5>
+        </div>
+        <div class="modal-body all-100">
+        </div>
+        <div class="modal-footer all-100">
+          <div class="push-right">
+            <button class="ink-button red prev"><i class="fa fa-chevron-left"></i> Previous</button>
+            <button class="ink-button green next">Next <i class="fa fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ink-container ink-grid">
+    <h1>Kittens Gallery</h1>
+    <div id="kittens">
+      <a href="http://lorempixel.com/400/400/cats/1/" title="Kitten 1" data-gallery="cats">
+        <img src="http://lorempixel.com/200/200/cats/1/" alt="Kitten 1">
+      </a>
+      <a href="http://lorempixel.com/400/400/cats/2/" title="Kitten 2" data-gallery="cats">
+        <img src="http://lorempixel.com/200/200/cats/2/" alt="Kitten 2">
+      </a>
+      <a href="http://lorempixel.com/400/400/cats/3/" title="Kitten 3" data-gallery="cats">
+        <img src="http://lorempixel.com/200/200/cats/3/" alt="Kitten 3">
+      </a>
+      <a href="http://lorempixel.com/400/400/cats/4/" title="Kitten 4" data-gallery="cats">
+        <img src="http://lorempixel.com/200/200/cats/4/" alt="Kitten 4">
+      </a>
+    </div>
+    <h1>Sports Gallery</h1>
+    <div id="cats">
+      <a href="http://lorempixel.com/400/400/sports/1/" title="Sports 1" data-gallery="sports">
+        <img src="http://lorempixel.com/200/200/sports/1/" alt="Sports 1">
+      </a>
+      <a href="http://lorempixel.com/400/400/sports/2/" title="Sports 2" data-gallery="sports">
+        <img src="http://lorempixel.com/200/200/sports/2/" alt="Sports 2">
+      </a>
+      <a href="http://lorempixel.com/400/400/sports/3/" title="Sports 3" data-gallery="sports">
+        <img src="http://lorempixel.com/200/200/sports/3/" alt="Sports 3">
+      </a>
+      <a href="http://lorempixel.com/400/400/sports/4/" title="Sports 4" data-gallery="sports">
+        <img src="http://lorempixel.com/200/200/sports/4/" alt="Sports 4">
+      </a>
+    </div>
+    <h1>Sports and Cats</h1>
+    <div id="sportsCats">
+      <a href="http://lorempixel.com/400/400/sports/5/" title="Sports 1" data-gallery>
+        <img src="http://lorempixel.com/200/200/sports/5/" alt="Sports 1">
+      </a>
+    </div>
+  </div>
+    <script>
+      require(['../dist/gallery/gallery'],
+        function(Gallery){
+          // The jquery like way
+          mink.$('#blueimp-gallery').gallery();
+          // The OOP way
+          // var gallery = new Gallery(document.getElementById('blueimp-gallery'));
+        });
+    </script>
+  </body>
+</html>
