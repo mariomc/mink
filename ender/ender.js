@@ -186,15 +186,6 @@
   };
 
   $.fn.trigger = function () {
-    console.log("this", this);
-      if (typeof arguments[0] == 'string')
-        return _$trigger.apply(this, arguments)
-      if (typeof arguments[0] == 'object' && typeof arguments[0].type == 'string')
-        return _$trigger.call(this, arguments[0].type)
-      return this
-  };
-
-  $.fn.trigger = function () {
 
     var element = this[0];
     var args = Array.prototype.slice.call(arguments);
