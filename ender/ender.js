@@ -185,20 +185,4 @@
     })
   };
 
-  $.fn.trigger = function () {
-
-    var element = this[0];
-    var args = Array.prototype.slice.call(arguments);
-    var ev = {
-      target: element,
-      currentTarget: element,
-      delegateTarget: element,
-      type: args[0].type || arguments[0],
-      timestamp: +new Date(),
-      isTrigger: true
-    };
-    args[0] = ev;
-    return _$trigger.call(this, ev.type, args);
-  };
-
 })(ender);

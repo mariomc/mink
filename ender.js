@@ -596,7 +596,7 @@
               // each handler is wrapped so we can handle delegation and custom events
               var wrappedHandler = function (element, fn, condition, args) {
                   var call = function (event, eargs) {
-                        return fn.apply(element, args ? slice.call(eargs, event ? 0 : 1).concat(args) : eargs)
+                        return fn.apply(element, args ? slice.call(eargs).concat(args) : eargs)
                       }
                     , findTarget = function (event, eventElement) {
                         return fn.__beanDel ? fn.__beanDel.ft(event.target, element) : eventElement
@@ -1006,7 +1006,7 @@
               */
           , fire = function (element, type, args) {
               var types = str2arr(type)
-                , i, j, l, names, handlers
+                , i, j, l, call, event, names, handlers
       
               for (i = types.length; i--;) {
                 type = types[i].replace(nameRegex, '')
@@ -1018,9 +1018,13 @@
                   // iterate over all listeners and manually 'fire'
                   handlers = registry.get(element, type, null, false)
                   args = [false].concat(args)
+                  event = new Event(null, element, nativeEvents[type])
+                  event.type = type
+                  call = args ? 'apply' : 'call'
+                  args = args ? [event].concat(args) : event
                   for (j = 0, l = handlers.length; j < l; j++) {
                     if (handlers[j].inNamespaces(names)) {
-                      handlers[j].handler.apply(element, args)
+                      handlers[j].handler[call](element, args)
                     }
                   }
                 }
@@ -3084,32 +3088,6 @@
               })
           })
         };
-      
-        $.fn.trigger = function () {
-          console.log("this", this);
-            if (typeof arguments[0] == 'string')
-              return _$trigger.apply(this, arguments)
-            if (typeof arguments[0] == 'object' && typeof arguments[0].type == 'string')
-              return _$trigger.call(this, arguments[0].type)
-            return this
-        };
-      
-        $.fn.trigger = function () {
-      
-          var element = this[0];
-          var args = Array.prototype.slice.call(arguments);
-          var ev = {
-            target: element,
-            currentTarget: element,
-            delegateTarget: element,
-            type: args[0].type || arguments[0],
-            timestamp: +new Date(),
-            isTrigger: true
-          };
-          args[0] = ev;
-          return _$trigger.call(this, ev.type, args);
-        };
-      
       })(ender);
     }
   }, 'ender');
@@ -3125,4 +3103,3 @@
   require('ender-mink');
 
 }.call(window));
-//# sourceMappingURL=ender.js.map
