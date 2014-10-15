@@ -199,13 +199,13 @@
           module.$element.trigger('opened');
         },
         onslide: function (a,b,c) {
-          module.$element.trigger('slide', arguments);
+          module.$element.trigger('slide');
         },
         onslideend: function () {
-          module.$element.trigger('slideend', arguments);
+          module.$element.trigger('slideend');
         },
         onslidecomplete: function () {
-          module.$element.trigger('slidecomplete', arguments);
+          module.$element.trigger('slidecomplete');
         },
         onclose: function () {
           module.$element.trigger('close');
